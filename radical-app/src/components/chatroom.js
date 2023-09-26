@@ -10,6 +10,18 @@ function Chatroom() {
       setMessages([...messages, inputMessage]);
       setInputMessage('');
     };
+
+    const handleFetchData = () => {
+      fetch('http://127.0.0.1:5000/api/data')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setMessages([...messages, data.message])
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   
     return (
       <div>
@@ -26,6 +38,7 @@ function Chatroom() {
           onChange={(e) => setInputMessage(e.target.value)}
         />
         <button onClick={handleSendMessage}>Send</button>
+        <button onClick={handleFetchData}>Fetch Data</button>
       </div>
     );
   }
