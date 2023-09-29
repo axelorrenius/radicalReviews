@@ -1,8 +1,10 @@
-# radicalReviews
+# golld
 
+## Start dev
 
-DO 
+Run the following in root directory
+```
+npm run dev
+```
 
-npm install
-
-npm start
+The current setup reloads frontend respectively backend on file changes.
