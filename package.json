@@ -10,5 +10,9 @@
     "license": "ISC",
     "devDependencies": {
         "concurrently": "^8.2.1"
+    },
+    "dependencies": {
+        "@mikro-orm/core": "^5.8.6",
+        "@mikro-orm/postgresql": "^5.8.6"
     }
 }

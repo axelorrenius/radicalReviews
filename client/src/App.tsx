@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Server } from './Server';
+import { InternalAPI } from './api/api';
 
 function App() {
-  const server = new Server();
+  const server = new InternalAPI();
   const [data, setData] = useState<any>(null);
 
   const fetchData = async () => {
