@@ -1,42 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { InternalAPI } from './api/api';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'; // Import Switch
+
+import Homepage from './components/homepage';
+import Courses from './components/courses';
+import User from './components/user';
+
+import { Container } from './components/_atoms';
+import NavBar from './components/NavBar';
+// import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
+  // 
   const server = new InternalAPI();
   const [data, setData] = useState<any>(null);
 
   const fetchData = async () => {
     server.getTest().then((res) => {
       setData(res);
-    })
-  }
+    });
+  };
+
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []);
+  // Lite osäker på vad detta över gör
 
+  const [sideMenuIsOpen, setSideMenuIsOpen] = React.useState<boolean>(false);
 
+	const toggleSideMenu = () => {
+		setSideMenuIsOpen(!sideMenuIsOpen);
+	};
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-        { JSON.stringify(data, null, 2) }
-    </div>
+    <Container>
+      <Router>
+      <NavBar toggleSideMenu={toggleSideMenu} />
+        <Switch> 
+          <Route path="/courses" component={Courses} />
+          <Route path="/user" component={User} />
+          <Route path="/" component={Homepage} />
+        </Switch>
+      </Router>
+      {/* <SideMenu isOpen={sideMenuIsOpen} toggleOpen={toggleSideMenu} /> */}
+    </Container>
   );
 }
 
 export default App;
+
+
+
+
+
