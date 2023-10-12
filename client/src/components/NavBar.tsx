@@ -33,11 +33,44 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
+// putting some mock data here untill we get the API up and running
+interface UserDTOMock {
+	id: number;
+	name: string;
+	email: string;
+	isAdmin: boolean;
+}
+
+const mockUser: UserDTOMock = {
+	id: 1,
+	name: 'MockUser',
+	email: 'yeehaw@yemail.com',
+	isAdmin: true,
+}
+
+const useAuth = () => {
+	return {
+		user: mockUser,
+		authenticated: true,
+	};
+};
+
+const useUpdateAuth = () => {
+	return {
+		login: () => {},
+		logout: () => {},
+	};
+};
+
+    // const user = "Test User :)";
+    // const authenticated = true;
+
 // const userString = (user: UserDTO | null) => user?.name || null;
+const userString = (user: UserDTOMock | null) => user?.name || null;
 
 const NavBar = (props: navbarProps) => {
-	// const { user, authenticated } = useAuth();
-	// const { login, logout } = useUpdateAuth();
+	const { user, authenticated } = useAuth();
+	const { login, logout } = useUpdateAuth();
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
 
@@ -49,20 +82,17 @@ const NavBar = (props: navbarProps) => {
 		setAnchorEl(null);
 	};
 
-	// const handleLogin = () => {
-	// 	login();
-	// 	//history.push(ROUTES.LOGIN);
-	// };
+	const handleLogin = () => {
+		login();
+		//history.push(ROUTES.LOGIN);
+	};
 
-	// const handleLogout = () => {
-	// 	logout();
-	// 	//history.push(ROUTES.LOGIN);
-	// };
+	const handleLogout = () => {
+		logout();
+		//history.push(ROUTES.LOGIN);
+	};
 
 	//useEffect(() => login(), [])
-
-    const user = "Test User :)";
-    const authenticated = true;
 
 	const menuItems = [
 		{
@@ -114,10 +144,10 @@ const NavBar = (props: navbarProps) => {
 							{menuItems
 								.filter(
 									({ requiresAdmin }) =>
-										(user && true) || // ALWAYS TRUE FOR NOW
-											// requiresAdmin &&
-											// user?.isAdmin) ||
-										!requiresAdmin
+									(user &&
+										requiresAdmin &&
+										user?.isAdmin) ||
+									!requiresAdmin
 								)
 								.map(({ title, pageURL }) => (
 									<MenuItem
@@ -139,7 +169,7 @@ const NavBar = (props: navbarProps) => {
 						Scopus - your campus compas
 					</Typography>
 					<Typography variant="body1" style={{ margin: 10 }}>
-						{'Test User :)'}{/* {userString(user)} */}
+						{userString(user)}
 					</Typography>
 					{authenticated ? (
 						<Button
