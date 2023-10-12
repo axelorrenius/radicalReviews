@@ -25,7 +25,7 @@ export class School {
 @Entity()
 export class Course {
     @PrimaryKey()
-    courseId!: number;
+    courseId!: number; // ska nog va en string tex ME2004
 
     @Property()
     courseName!: string;
