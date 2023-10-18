@@ -1,12 +1,12 @@
-import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { Thread } from "./forum.entity";
-import { User, UserCourse } from "./user.entity";
+import { Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { User } from "./user.entity";
+import { Course } from "./course.entity";
 
 
 @Entity()
 export class School {
     @PrimaryKey()
-    schoolId!: number;
+    id!: number;
 
     @Property()
     schoolName!: string;
@@ -19,26 +19,4 @@ export class School {
 
     @OneToMany(() => User, user => user.school)
     users!: User[];
-}
-
-
-@Entity()
-export class Course {
-    @PrimaryKey()
-    courseId!: number; // ska nog va en string tex ME2004
-
-    @Property()
-    courseName!: string;
-
-    @Property()
-    description!: string;
-
-    @ManyToOne()
-    school!: School;
-
-    @OneToMany(() => Thread, thread => thread.course)
-    threads!: Thread[];
-
-    @OneToMany(() => UserCourse, userCourse => userCourse.course)
-    userCourses!: UserCourse[];
 }

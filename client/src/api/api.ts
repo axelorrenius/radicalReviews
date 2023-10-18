@@ -15,7 +15,6 @@ export class InternalAPI {
     public async searchCourse(search: string) {
         return [
             {
-
             }
         ]
     }

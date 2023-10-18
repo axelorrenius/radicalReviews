@@ -1,10 +1,13 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { Course, School } from "./school.entity";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { School } from "./school.entity";
+import { UserCourse } from "./user-course.entity";
+import { Post } from "./post.entity";
+import { Comment } from "./post-comment.entity";
 
 @Entity()
 export class User {
     @PrimaryKey()
-    userId!: number;
+    id!: number;
 
     @Property()
     username!: string;
@@ -25,37 +28,20 @@ export class User {
     programDescription!: string;
 
     @Property({ onCreate: () => new Date() })
-    createdAt: Date = new Date()
+    createdAt!: Date;
 
     @Property({ onUpdate: () => new Date() })
     updatedAt: Date = new Date()
 
     @ManyToOne()
     school!: School;
-}
 
-export enum CourseRole {
-    Student = "student",
-    TeacherAssistant = "ta",
-    Teacher = "teacher",
-    Professor = "professor",
-    Admin = "admin"
-}
+    @OneToMany(() => UserCourse, userCourse => userCourse.user)
+    userCourses!: UserCourse[];
 
-@Entity()
-export class UserCourse {
-    @PrimaryKey()
-    userCourseId!: number;
+    @OneToMany(() => Post, post => post.createdBy)
+    posts!: Post[];
 
-    @ManyToOne()
-    user!: User;
-
-    @ManyToOne()
-    course!: Course;
-
-    @Property()
-    enrolledDate!: Date;
-
-    @Property()
-    role!: CourseRole;
+    @OneToMany(() => Comment, post => post.createdBy)
+    comments!: Comment[];
 }

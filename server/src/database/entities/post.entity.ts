@@ -1,15 +1,21 @@
 import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { User } from "./user.entity";
-import { Post } from "./post.entity";
-import { Course } from "./course.entity";
+import { Thread } from "./forum.entity";
+import { Comment } from "./post-comment.entity";
 
 @Entity()
-export class Thread {
+export class Post {
     @PrimaryKey()
     id!: number;
 
-    @PrimaryKey()
-    title!: string;
+    @Property({type: "text"})
+    content!: string;
+
+    @Property({default: 0})
+    upVotes!: number;
+
+    @Property({default: 0})
+    downVotes!: number;
 
     @Property({ onCreate: () => new Date() })
     createdAt: Date = new Date()
@@ -21,11 +27,8 @@ export class Thread {
     createdBy!: User;
 
     @ManyToOne()
-    updatedBy!: User;
+    thread!: Thread;
 
-    @OneToMany(() => Post, post => post.thread)
-    posts!: Post[];
-
-    @ManyToOne()
-    course!: Course;
+    @OneToMany(() => Comment, comment => comment.post)
+    comments!: Comment[];
 }
