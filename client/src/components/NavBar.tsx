@@ -54,19 +54,19 @@ const NavBar = (props: NavbarProps) => {
         </ul>
         {authenticated ? (
           <div className="ms-auto d-flex align-items-center"> {/* Use ml-auto and d-flex to push the content to the right corner */}
-		  <span className="navbar-text mr-2">{user ? user.name : null}</span>
+		  <span className="navbar-text px-4">{user ? user.name : null}</span>
             {/* <button
-              className="btn btn-outline-secondary mr-2"
+              className="btn btn-outline-secondary mr-4"
               onClick={props.toggleSideMenu}
             >
               Instructions
             </button> */}
-            <a href="/api/session/logout" className="btn btn-outline-light">
+            <a href="/api/session/logout" className="btn btn-outline-light px-4">
               Logout
             </a>
           </div>
         ) : (
-          <a href="/api/session/login" className="btn btn-outline-light">
+          <a href="/api/session/login" className="btn btn-outline-light px-4">
             Login
           </a>
         )}
