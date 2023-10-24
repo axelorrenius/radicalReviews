@@ -1,212 +1,78 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import { ROUTES } from '../constants';
-// import { getApiPath } from '../util';
-// import { useAuth, useUpdateAuth } from '../contexts';
-// import { UserDTO } from '../DTO/UserDTO';
+// Include Bootstrap CSS classes (assuming you've included Bootstrap in your project)
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-type navbarProps = {
-	toggleSideMenu: () => void;
+type NavbarProps = {
+  toggleSideMenu: () => void;
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-	createStyles({
-		root: {
-			flexGrow: 1,
-		},
-		menuButton: {
-			marginRight: theme.spacing(2),
-		},
-		title: {
-			flexGrow: 1,
-		},
-	})
-);
+const NavBar = (props: NavbarProps) => {
+  const user = {
+    id: 1,
+    name: 'MockUser',
+    email: 'yeehaw@yemail.com',
+    isAdmin: true,
+  };
+  const authenticated = true;
 
-// putting some mock data here untill we get the API up and running
-interface UserDTOMock {
-	id: number;
-	name: string;
-	email: string;
-	isAdmin: boolean;
-}
+  const menuItems = [
+    {
+      title: 'Home',
+      pageURL: '/',
+      requiresAdmin: false,
+    },
+    {
+      title: 'Courses',
+      pageURL: '/courses', 
+      requiresAdmin: true,
+    },
+    {
+      title: 'User',
+      pageURL: '/user', 
+      requiresAdmin: true,
+    },
+  ];
 
-const mockUser: UserDTOMock = {
-	id: 1,
-	name: 'MockUser',
-	email: 'yeehaw@yemail.com',
-	isAdmin: true,
-}
-
-const useAuth = () => {
-	return {
-		user: mockUser,
-		authenticated: true,
-	};
-};
-
-const useUpdateAuth = () => {
-	return {
-		login: () => {},
-		logout: () => {},
-	};
-};
-
-    // const user = "Test User :)";
-    // const authenticated = true;
-
-// const userString = (user: UserDTO | null) => user?.name || null;
-const userString = (user: UserDTOMock | null) => user?.name || null;
-
-const NavBar = (props: navbarProps) => {
-	const { user, authenticated } = useAuth();
-	const { login, logout } = useUpdateAuth();
-	const classes = useStyles();
-	const [anchorEl, setAnchorEl] = React.useState<Element | null>(null);
-
-	const handleMenu: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-		setAnchorEl(e.target as Element);
-	}; 
-
-	const handleMenuClick = (_e: React.MouseEvent) => {
-		setAnchorEl(null);
-	};
-
-	const handleLogin = () => {
-		login();
-		//history.push(ROUTES.LOGIN);
-	};
-
-	const handleLogout = () => {
-		logout();
-		//history.push(ROUTES.LOGIN);
-	};
-
-	//useEffect(() => login(), [])
-
-	const menuItems = [
-		{
-			title: 'Home',
-			pageURL: '/',
-			requiresAdmin: false,
-		},
-		{
-			title: 'Courses',
-			pageURL: ROUTES.COURSES,
-			requiresAdmin: true,
-		},
-		{
-			title: 'User',
-			pageURL: ROUTES.USER,
-			requiresAdmin: true,
-		},
-	];
-
-	return (
-		<div className={classes.root}>
-			<AppBar position="fixed">
-				<Toolbar>
-					<IconButton
-						edge="start"
-						className={classes.menuButton}
-						color="inherit"
-						aria-label="menu"
-						onClick={handleMenu}
-					>
-						<MenuIcon />
-					</IconButton>
-					{user ? (
-						<Menu
-							id="menu-navbar"
-							anchorEl={anchorEl}
-							anchorOrigin={{
-								vertical: 'top',
-								horizontal: 'left',
-							}}
-							keepMounted
-							transformOrigin={{
-								vertical: 'top',
-								horizontal: 'left',
-							}}
-							open={!!anchorEl}
-							onClose={() => setAnchorEl(null)}
-						>
-							{menuItems
-								.filter(
-									({ requiresAdmin }) =>
-									(user &&
-										requiresAdmin &&
-										user?.isAdmin) ||
-									!requiresAdmin
-								)
-								.map(({ title, pageURL }) => (
-									<MenuItem
-										component={Link}
-										style={{
-											color: 'inherit',
-											textDecoration: 'none',
-										}}
-										to={pageURL}
-										key={title}
-										onClick={handleMenuClick}
-									>
-										{title}
-									</MenuItem>
-								))}
-						</Menu>
-					) : null}
-					<Typography variant="h6" className={classes.title}>
-						Scopus - your campus compas
-					</Typography>
-					<Typography variant="body1" style={{ margin: 10 }}>
-						{userString(user)}
-					</Typography>
-					{authenticated ? (
-						<Button
-							variant="outlined"
-							color="secondary"
-							style={{ margin: 10 }}
-							onClick={(e) => props.toggleSideMenu()}
-						>
-							Instructions
-						</Button>
-					) : null}
-					{authenticated ? (
-						<Button
-							variant="outlined"
-							color="default"
-							href="api/session/logout"
-							style={{
-								margin: 10,
-								borderColor: '#fff',
-								color: '#fff',
-							}}
-						>
-							Logout
-						</Button>
-					) : (
-						<Button
-							variant="outlined"
-							style={{ borderColor: '#fff', color: '#fff' }}
-							// href={getApiPath() + '/session/login'}
-						>
-							Login
-						</Button>
-					)}
-				</Toolbar>
-			</AppBar>
-		</div>
-	);
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+      <Link to="/" className="navbar-brand">
+        Scopus 
+      </Link>
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav mr-auto">
+          {menuItems
+            .filter(({ requiresAdmin }) => (user && requiresAdmin && user.isAdmin) || !requiresAdmin)
+            .map(({ title, pageURL }) => (
+              <li className="nav-item" key={title}>
+                <Link to={pageURL} className="nav-link">
+                  {title}
+                </Link>
+              </li>
+            ))}
+        </ul>
+        <span className="navbar-text mr-2">{user ? user.name : null}</span>
+        {authenticated ? (
+          <div className="ms-auto d-flex align-items-center"> {/* Use ml-auto and d-flex to push the content to the right corner */}
+            <button
+              className="btn btn-outline-secondary mr-2"
+              onClick={props.toggleSideMenu}
+            >
+              Instructions
+            </button>
+            <a href="/api/session/logout" className="btn btn-outline-light">
+              Logout
+            </a>
+          </div>
+        ) : (
+          <a href="/api/session/login" className="btn btn-outline-light">
+            Login
+          </a>
+        )}
+      </div>
+    </nav>
+  );
 };
 
 export default NavBar;
