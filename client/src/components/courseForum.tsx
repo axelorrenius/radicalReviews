@@ -1,5 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 interface RouteParams {
   courseId: string; // Define the type of courseId here
@@ -11,16 +13,19 @@ const mockThreads = [
     id: 1,
     title: 'Thread 1',
     content: 'This is the content of Thread 1.',
+    likesComments: '5 comments, 10 likes'
   },
   {
     id: 2,
     title: 'Thread 2',
     content: 'This is the content of Thread 2.',
+    likesComments: '5 comments, 10 likes'
   },
   {
     id: 3,
     title: 'Thread 3',
     content: 'This is the content of Thread 3.',
+    likesComments: '5 comments, 10 likes'
   },
 ];
 
@@ -28,14 +33,6 @@ function CourseDetail() {
   const { courseId } = useParams<RouteParams>();
 
   // Now courseId should be recognized as a string.
-  const threadBoxStyle = {
-    border: '1px solid #ccc',
-    padding: '10px',
-    margin: '10px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '5px',
-  };
-
   const addThread = () => {
     // Implement the logic to enter a new thread here
     console.log('Entering a new thread');
@@ -68,10 +65,17 @@ function CourseDetail() {
       <h3>Threads</h3>
       <div className="threads">
         {mockThreads.map((thread) => (
-          <div key={thread.id} style={threadBoxStyle}>
-            <h4>{thread.title}</h4>
-            <p>{thread.content}</p>
-          </div>
+          <Link key={thread.id} to={`/thread/${thread.id}`}>
+            <Card key={thread.id} style={{ margin: '10px' }}>
+              <Card.Body>
+                <Card.Title>{thread.title}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                  {thread.likesComments}
+                </Card.Subtitle>
+                <Card.Text>{thread.content}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>

@@ -10,6 +10,7 @@ import User from './components/user';
 import { Container } from './components/_atoms';
 import NavBar from './components/NavBar';
 import CourseForum from './components/courseForum';
+import Post from './components/thread';
 // import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
       <NavBar toggleSideMenu={toggleSideMenu} />
         <Switch> 
           <Route path="/course/:courseId" component={CourseForum} />
+          <Route path="/thread/:threadId" component={Post} />
           <Route path="/courses" component={Courses} />
           <Route path="/user" component={User} />
           <Route path="/" component={Homepage} />
