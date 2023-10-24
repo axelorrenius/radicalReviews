@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import 'font-awesome/css/font-awesome.min.css'; // Import the Font Awesome CSS
 
 // Define a basic post structure with question, comments, and votes
 const initialPost = {
@@ -18,6 +20,8 @@ const initialPost = {
 const Post = () => {
   const [post, setPost] = useState(initialPost);
   const [sortedComments, setSortedComments] = useState(post.comments);
+  const [newComment, setNewComment] = useState(''); // Track the new comment text
+  const [showAddCommentModal, setShowAddCommentModal] = useState(false);
 
   // Function to handle upvoting the question
   const upvoteQuestion = () => {
@@ -51,6 +55,32 @@ const Post = () => {
     setSortedComments(updatedComments);
   };
 
+  // Function to show the "Add Comment" modal
+  const showAddComment = () => {
+    setShowAddCommentModal(true);
+  };
+
+  // Function to close the "Add Comment" modal
+  const closeAddComment = () => {
+    setShowAddCommentModal(false);
+  };
+
+  // Function to add a new comment
+  const addComment = () => {
+    if (newComment.trim() !== '') {
+      const newCommentObj = {
+        id: Date.now(), // Generate a unique ID (you can use a better method)
+        text: newComment,
+        votes: 0,
+      };
+      const updatedComments = [...post.comments, newCommentObj];
+      setPost({ ...post, comments: updatedComments });
+      setSortedComments([...sortedComments, newCommentObj]); // Include the new comment in the sorted list
+      setNewComment('');
+      closeAddComment();
+    }
+  };
+
   // Sort comments whenever sortedComments or post.comments change
   useEffect(() => {
     const sorted = [...sortedComments].sort((a, b) => b.votes - a.votes);
@@ -64,12 +94,15 @@ const Post = () => {
           <Card.Title>{post.question}</Card.Title>
           <Card.Text>
             <div className="votes">
-              <span>{post.votes}</span>
               <Button onClick={upvoteQuestion} variant="link">
-                <i className="fa fa-arrow-up" /> {/* Up arrow */}
+                <i className="fa fa-arrow-up" /> {/* Up arrow with red color */}
               </Button>
+              <span>{post.votes}</span>
               <Button onClick={downvoteQuestion} variant="link">
-                <i className="fa fa-arrow-down" /> {/* Down arrow */}
+                <i className="fa fa-arrow-down"/> {/* Down arrow with red color */}
+              </Button>
+              <Button onClick={showAddComment} variant="link">
+                <i className="fa fa-comment" />
               </Button>
             </div>
           </Card.Text>
@@ -81,17 +114,40 @@ const Post = () => {
           <ListGroup.Item key={comment.id}>
             {comment.text}
             <div className="votes">
-              <span>{comment.votes}</span>
               <Button onClick={() => upvoteComment(comment.id)} variant="link">
-              <i className="fa fa-arrow-up" style={{ color: 'green' }} /> {/* Up arrow */}
+                <i className="fa fa-arrow-up" style={{ color: 'green' }} /> {/* Up arrow with red color */}
               </Button>
+              <span>{comment.votes}</span>
               <Button onClick={() => downvoteComment(comment.id)} variant="link">
-                <i className="fa fa-arrow-down" style={{ color: 'red' }} /> {/* Down arrow */}
+                <i className="fa fa-arrow-down" style={{ color: 'red' }} /> {/* Down arrow with red color */}
               </Button>
             </div>
           </ListGroup.Item>
         ))}
       </ListGroup>
+
+      {/* Add Comment Modal */}
+      <Modal show={showAddCommentModal} onHide={closeAddComment}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Comment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <textarea
+            rows={1}
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a new comment..."
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeAddComment}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={addComment}>
+            Add Comment
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
