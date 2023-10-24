@@ -1,55 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
+import { InternalAPI, ThreadDTO } from '../api/api';
 
 interface RouteParams {
   courseId: string; // Define the type of courseId here
 }
 
-// Mock thread data
-const mockThreads = [
-  {
-    id: 1,
-    title: 'Thread 1',
-    content: 'This is the content of Thread 1.',
-    likesComments: '5 comments, 10 likes',
-  },
-  {
-    id: 2,
-    title: 'Thread 2',
-    content: 'This is the content of Thread 2.',
-    likesComments: '5 comments, 10 likes',
-  },
-  {
-    id: 3,
-    title: 'Thread 3',
-    content: 'This is the content of Thread 3.',
-    likesComments: '5 comments, 10 likes',
-  },
-];
-
 function CourseDetail() {
+  const server = new InternalAPI();
+
   const { courseId } = useParams<RouteParams>();
+  const courseIdNum = parseInt(courseId);
 
   const [showModal, setShowModal] = useState(false);
   const [newThread, setNewThread] = useState('');
-  const [threads, setThreads] = useState(mockThreads);
+  const [threads, setThreads] = useState<ThreadDTO[]>([]);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
+  const fetchThreads = async () => {
+    const threads = await server.getThreads(courseIdNum)
+    setThreads(threads);
+  };
+
+  useEffect(() => {
+    fetchThreads();
+  }, []);
+
   const addNewThread = () => {
     if (newThread) {
       const newThreadObj = {
-        id: threads.length + 1,
+        courseId: courseIdNum,
         title: newThread,
         content: '',
-        likesComments: '0 comments, 0 likes',
+        upVotes: 0,
+        downVotes: 0,
+        posts: []
       };
-      const updatedThreads = [...threads, newThreadObj];
-      setThreads(updatedThreads);
+
+      server.saveThread(newThreadObj).then(result => {
+        setThreads([result, ...threads]);
+      }).catch(err => console.error(err));
+
       setNewThread(''); // Clear the input
       handleClose();
     }
@@ -83,7 +79,7 @@ function CourseDetail() {
               <Card.Body>
                 <Card.Title>{thread.title}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
-                  {thread.likesComments}
+                  {/* {thread.likesComments} */}
                 </Card.Subtitle>
                 <Card.Text>{thread.content}</Card.Text>
               </Card.Body>

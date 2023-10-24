@@ -30,16 +30,16 @@ export class User {
     @Property()
     salt!: string
 
-    @Property()
+    @Property({ nullable: true })
     programDescription!: string
 
     @Property({ onCreate: () => new Date() })
     createdAt!: Date
 
-    @Property({ onUpdate: () => new Date() })
+    @Property({ onUpdate: () => new Date(), nullable: true })
     updatedAt: Date = new Date()
 
-    @ManyToOne(() => School)
+    @ManyToOne(() => School, { nullable: true })
     school!: School
 
     @OneToMany(() => UserCourse, (userCourse) => userCourse.user)

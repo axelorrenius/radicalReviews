@@ -14,11 +14,17 @@ export class Thread {
     @PrimaryKey()
     id!: number
 
-    @PrimaryKey()
+    @Property()
     title!: string
 
     @Property()
     content!: string
+
+    @Property({ default: 0 })
+    upVotes!: number
+
+    @Property({ default: 0 })
+    downVotes!: number
 
     @Property({ onCreate: () => new Date() })
     createdAt: Date = new Date()
@@ -29,7 +35,7 @@ export class Thread {
     @ManyToOne(() => User)
     createdBy!: User
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { nullable: true })
     updatedBy!: User
 
     @OneToMany(() => Post, (post) => post.thread)

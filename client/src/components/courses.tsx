@@ -1,21 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-
-const mockData = [
-  {
-    courseId: 2004,
-    courseName: 'Den vi läser nu lol',
-    description: 'Inte superkul',
-    school: 'KTH'
-  },
-  {
-    courseId: 2005,
-    courseName: 'Någon annan kurs',
-    description: 'Säkert roligare',
-    school: 'KTH' 
-  }
-]
+import { CourseDTO, InternalAPI } from '../api/api';
 
 const CourseBox = styled.div`
   border: 1px solid #ccc;
@@ -37,16 +23,27 @@ const CourseDescription = styled.p`
 `;
 
 function Courses() {
+  const server = new InternalAPI();
+  const [courses, setCourses] = useState<CourseDTO[]>([]);
+
+  const fetchData = async () => {
+    const courses = await server.getCourses(1)
+    setCourses(courses);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div>
       <h2>Courses</h2>
       <div className="course-list">
-        {mockData.map(course => (
-          <Link to={`/course/${course.courseId}`} key={course.courseId}>
+        {courses.map(course => (
+          <Link to={`/course/${course.id}`} key={course.id}>
             <CourseBox>
               <CourseTitle>{course.courseName}</CourseTitle>
               <CourseDescription>Description: {course.description}</CourseDescription>
-              <CourseDescription>School: {course.school}</CourseDescription>
             </CourseBox>
           </Link>
         ))}

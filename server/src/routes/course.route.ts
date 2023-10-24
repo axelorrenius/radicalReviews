@@ -37,11 +37,35 @@ export default async function courseRoutes(
             return await c?.courseController.getCourse(courseId)
         }
     )
+
+    fastify.get<{ Params: { schoolId: number } }>(
+        "/bySchool/:schoolId",
+        async (request, reply) => {
+            const { schoolId } = request.params
+            return (
+                (await c?.courseController.getCoursesBySchool(schoolId)) || []
+            )
+        }
+    )
+
     fastify.get<{ Params: { courseId: number } }>(
         "/:courseId/threads",
         async (request, reply) => {
             const { courseId } = request.params
-            return await c?.courseController.getThreads(courseId)
+            const threads = await c?.courseController.getThreads(courseId)
+
+            if (!threads) return []
+
+            return threads.map((thread) => {
+                return {
+                    id: thread.id,
+                    courseId: thread.course.id,
+                    title: thread.title,
+                    content: thread.content,
+                    createdAt: thread.createdAt,
+                    updatedAt: thread.updatedAt
+                }
+            })
         }
     )
 }

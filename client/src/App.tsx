@@ -14,14 +14,11 @@ import Post from './components/thread';
 // import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
-  // 
+  //
   const server = new InternalAPI();
   const [data, setData] = useState<any>(null);
 
   const fetchData = async () => {
-    server.getTest().then((res) => {
-      setData(res);
-    });
   };
 
   useEffect(() => {
@@ -39,7 +36,7 @@ function App() {
     <Router>
     <Container>
       <NavBar toggleSideMenu={toggleSideMenu} />
-        <Switch> 
+        <Switch>
           <Route path="/course/:courseId" component={CourseForum} />
           <Route path="/thread/:threadId" component={Post} />
           <Route path="/courses" component={Courses} />
@@ -53,8 +50,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-

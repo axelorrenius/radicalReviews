@@ -18,6 +18,9 @@ export class Course {
     courseName!: string
 
     @Property()
+    courseCode!: string
+
+    @Property()
     description!: string
 
     @ManyToOne(() => School)
