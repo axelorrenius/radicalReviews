@@ -1,47 +1,53 @@
-import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { School } from "./school.entity";
-import { UserCourse } from "./user-course.entity";
-import { Post } from "./post.entity";
-import { Comment } from "./post-comment.entity";
+import {
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryKey,
+    Property
+} from "@mikro-orm/core"
+import { School } from "./school.entity"
+import { UserCourse } from "./user-course.entity"
+import { Post } from "./post.entity"
+import { Comment } from "./post-comment.entity"
 
 @Entity()
 export class User {
     @PrimaryKey()
-    id!: number;
+    id!: number
 
     @Property()
-    username!: string;
+    username!: string
 
     @Property()
-    email!: string;
+    email!: string
 
     @Property()
-    phoneNumber!: string;
+    phoneNumber!: string
 
     @Property()
-    password!: string;
+    password!: string
 
     @Property()
-    salt!: string;
+    salt!: string
 
     @Property()
-    programDescription!: string;
+    programDescription!: string
 
     @Property({ onCreate: () => new Date() })
-    createdAt!: Date;
+    createdAt!: Date
 
     @Property({ onUpdate: () => new Date() })
     updatedAt: Date = new Date()
 
-    @ManyToOne()
-    school!: School;
+    @ManyToOne(() => School)
+    school!: School
 
-    @OneToMany(() => UserCourse, userCourse => userCourse.user)
-    userCourses!: UserCourse[];
+    @OneToMany(() => UserCourse, (userCourse) => userCourse.user)
+    userCourses!: UserCourse[]
 
-    @OneToMany(() => Post, post => post.createdBy)
-    posts!: Post[];
+    @OneToMany(() => Post, (post) => post.createdBy)
+    posts!: Post[]
 
-    @OneToMany(() => Comment, post => post.createdBy)
-    comments!: Comment[];
+    @OneToMany(() => Comment, (post) => post.createdBy)
+    comments!: Comment[]
 }

@@ -1,20 +1,34 @@
 import { Options } from "@mikro-orm/core"
+import dotenv from "dotenv"
+dotenv.config()
+
+console.log(process.env.PG_HOST)
+console.log(process.env.PG_USER)
+console.log(process.env.PG_PASSWORD)
+console.log(process.env.PG_DATABASE)
 
 const config: Options = {
     migrations: {
-        path: "./src/database/migrations",
-        tableName: "migrations",
+        pathTs: "src/database/migrations",
+        path: "dist/database/migrations",
+        tableName: "mikro-orm-migrations",
         transactional: true
     },
-    entitiesTs: ["./src/database/entities"],
-    entities: ["./dist/database/entities"],
-    host: process.env.PG_HOST || "localhost",
-    user: process.env.PG_USER || "postgres",
-    password: process.env.PG_PASSWORD || "postgres",
+    entitiesTs: ["src/**/*.entity.ts"],
+    entities: ["dist/**/*.entity.js"],
+    host: "radicalreviews-2.cmm29ljdrxgc.eu-west-1.rds.amazonaws.com",
+    user: "postgres",
+    password: "Postgres123",
     port: 5432,
     dbName: "radicalreviews",
     type: "postgresql",
-    debug: true
+    driverOptions: {
+        connection: {
+            ssl: {
+                rejectUnauthorized: false
+            }
+        }
+    }
 }
 
 export default config

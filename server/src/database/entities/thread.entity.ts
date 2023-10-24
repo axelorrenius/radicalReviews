@@ -6,22 +6,19 @@ import {
     Property
 } from "@mikro-orm/core"
 import { User } from "./user.entity"
-import { Thread } from "./thread.entity"
-import { Comment } from "./post-comment.entity"
+import { Post } from "./post.entity"
+import { Course } from "./course.entity"
 
 @Entity()
-export class Post {
+export class Thread {
     @PrimaryKey()
     id!: number
 
-    @Property({ type: "text" })
+    @PrimaryKey()
+    title!: string
+
+    @Property()
     content!: string
-
-    @Property({ default: 0 })
-    upVotes!: number
-
-    @Property({ default: 0 })
-    downVotes!: number
 
     @Property({ onCreate: () => new Date() })
     createdAt: Date = new Date()
@@ -32,9 +29,12 @@ export class Post {
     @ManyToOne(() => User)
     createdBy!: User
 
-    @ManyToOne(() => Thread)
-    thread!: Thread
+    @ManyToOne(() => User)
+    updatedBy!: User
 
-    @OneToMany(() => Comment, (comment) => comment.post)
-    comments!: Comment[]
+    @OneToMany(() => Post, (post) => post.thread)
+    posts!: Post[]
+
+    @ManyToOne(() => Course)
+    course!: Course
 }

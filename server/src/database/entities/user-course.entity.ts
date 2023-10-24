@@ -1,22 +1,22 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { User } from "./user.entity";
-import { Course } from "./course.entity";
-import { CourseRole } from "../enums";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core"
+import { User } from "./user.entity"
+import { Course } from "./course.entity"
+import { CourseRole } from "../enums"
 
 @Entity()
 export class UserCourse {
     @PrimaryKey()
-    id!: number;
+    id!: number
 
-    @ManyToOne()
-    user!: User;
+    @ManyToOne(() => User)
+    user!: User
 
-    @ManyToOne()
-    course!: Course;
-
-    @Property()
-    enrolledDate!: Date;
+    @ManyToOne(() => Course)
+    course!: Course
 
     @Property()
-    role!: CourseRole;
+    enrolledDate!: Date
+
+    @Property()
+    role!: CourseRole
 }

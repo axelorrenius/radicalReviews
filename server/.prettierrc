@@ -1,0 +1,9 @@
+{
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "tabWidth": 4,
+    "plotWidth": 120,
+    "trailingComma": "none",
+    "semi": false,
+    "arrowParens": "always"
+}

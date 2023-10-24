@@ -1,28 +1,39 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node build/index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@fastify/cors": "^8.4.0",
-    "@mikro-orm/core": "^5.8.7",
-    "@mikro-orm/postgresql": "^5.8.7",
-    "dotenv": "^16.3.1",
-    "fastify": "^4.23.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20.6.3",
-    "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
-  }
+    "name": "server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon src/server.ts",
+        "build": "tsc -p tsconfig.json",
+        "start": "node build/index.js",
+        "mikro-orm": "ts-node -r tsconfig-paths/register ./node_modules/@mikro-orm/cli/cli.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@fastify/cors": "^8.4.0",
+        "@mikro-orm/cli": "^5.8.6",
+        "@mikro-orm/core": "^5.8.6",
+        "@mikro-orm/migrations": "^5.8.6",
+        "@mikro-orm/postgresql": "^5.8.6",
+        "dotenv": "^16.3.1",
+        "fastify": "^4.23.2",
+        "prettier": "^3.0.3"
+    },
+    "devDependencies": {
+        "@types/node": "^20.6.3",
+        "nodemon": "^3.0.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2"
+    },
+    "mikro-orm": {
+        "useTsNode:": true,
+        "configPaths": [
+            "./src/database/orm.config.ts",
+            "./dist/database/orm.config.js"
+        ]
+    }
 }
