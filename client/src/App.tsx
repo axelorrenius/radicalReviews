@@ -11,6 +11,7 @@ import { Container } from './components/_atoms';
 import NavBar from './components/NavBar';
 import CourseForum from './components/courseForum';
 import Post from './components/thread';
+import Breadcrumbs from './components/breadcrumbs';
 // import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
     <Router>
     <Container>
       <NavBar toggleSideMenu={toggleSideMenu} />
+      <Breadcrumbs />
         <Switch>
           <Route path="/course/:courseId" component={CourseForum} />
           <Route path="/thread/:threadId" component={Post} />

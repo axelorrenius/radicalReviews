@@ -27,7 +27,12 @@ function Courses() {
   const [courses, setCourses] = useState<CourseDTO[]>([]);
 
   const fetchData = async () => {
-    const courses = await server.getCourses(1)
+    // const courses = await server.getCourses(1)
+    const courses = [
+      { id: 1, courseName: 'CS 101', description: 'Introduction to Computer Science', schoolId: 1 },
+      { id: 2, courseName: 'CS 201', description: 'Data Structures', schoolId: 1 },
+      { id: 3, courseName: 'CS 301', description: 'Algorithms', schoolId: 1 },
+    ]
     setCourses(courses);
   };
 
