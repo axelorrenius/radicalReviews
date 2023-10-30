@@ -7,18 +7,6 @@ import 'font-awesome/css/font-awesome.min.css'; // Import the Font Awesome CSS
 import { InternalAPI, PostDTO, ThreadDTO } from '../api/api';
 import { useParams } from 'react-router-dom';
 
-// Define a basic post structure with question, comments, and votes
-const initialPost = {
-  id: 1,
-  question: 'What is your favorite programming language?',
-  comments: [
-    { id: 1, text: 'I love JavaScript!', votes: 5 },
-    { id: 2, text: 'Python is the best!', votes: 8 },
-    { id: 3, text: 'C++ all the way!', votes: 3 },
-  ],
-  votes: 0,
-};
-
 interface RouteParams {
   threadId: string; // Define the type of courseId here
 }
@@ -35,10 +23,73 @@ const Post = () => {
   const [showAddPostModal, setShowAddPostModal] = useState(false);
 
   const fetchThread = async () => {
-    const thread = server.getThread(threadIdNum).then(result => {
-      setThread(result);
-    }).catch(err => console.error(err));
+    // const thread = server.getThread(threadIdNum).then(result => {
+    //   setThread(result);
+    // }).catch(err => console.error(err));
+    const thread = {
+      id: 1,
+      courseId: 1,
+      title: 'Introduction to Programming',
+      upVotes: 10,
+      downVotes: 2,
+      content: 'This thread is about the basics of programming.',
+      createdAt: new Date('2023-01-15'),
+      updatedAt: new Date('2023-01-16'),
+      posts: [{
+        id: 1,
+        user: {
+          id: 1,
+          username: 'John Doe',
+          lvl: 1,
+          title: 'Beginner',
+        },
+        threadId: 1,
+        content: 'This is the content of the first post.',
+        upVotes: 10,
+        downVotes: 2,
+        createdAt: new Date('2023-01-15'),
+        updatedAt: new Date('2023-01-16'),
+        comments: [],
+      },
+      {
+        id: 2,
+        user: {
+          id: 2,
+          username: 'MR smart boi',
+          lvl: 1337,
+          title: 'Smort at math',
+        },
+        threadId: 2,
+        content: 'Second post content goes here.',
+        upVotes: 8999,
+        downVotes: 1,
+        createdAt: new Date('2023-01-18'),
+        updatedAt: new Date('2023-01-19'),
+        comments: [],
+      },
+      {
+        threadId: 3, // No 'id' provided for this post
+        user: {
+          id: 3,
+          username: 'teacher',
+          lvl: 3,
+          title: 'Always learning',
+        },
+        content: 'This is another post without an ID.',
+        upVotes: 5,
+        downVotes: 0,
+        createdAt: new Date('2023-01-20'),
+        updatedAt: new Date('2023-01-21'),
+        comments: [], // No comments for this post
+      },],
+      tags: ['Programming', 'Beginner'],
+    }
+    setThread(thread);
   };
+
+
+  // placeholder image
+  const profileImage = 'https://images.app.goo.gl/NqMtK4qsE9hk2tih6'
 
 
   useEffect(() => {
@@ -106,6 +157,12 @@ const Post = () => {
     if (newPost.trim() !== '') {
       const newPostObj: PostDTO = {
         threadId: threadIdNum,
+        user: {
+          id: 1,
+          username: 'John Doe',
+          lvl: 1,
+          title: 'Beginner',
+        },
         content: newPost,
         upVotes: 0,
         downVotes: 0,
@@ -155,13 +212,23 @@ const Post = () => {
               </Button>
             </div>
           </div>
-        </Card.Body>
+        </Card.Body>  
       </Card>
 
       <ListGroup className="posts">
         {sortedPosts.map((post) => (
           <ListGroup.Item key={post.id}>
-            {post.content}
+            <div className="user-info">
+              <img src={profileImage} alt="User" />
+              <div className="user-details">
+                <div className="username" style={{ fontWeight: 'bold', fontSize: '12px' }}>
+                  {post.user.username} - {`Level ${post.user.lvl}`} - {post.user.title}
+                </div>
+              </div>
+            </div>
+            <div className="post-content" style={{ marginTop: '10px' }}>
+              {post.content}
+            </div>
             <div className="votes">
               <Button onClick={() => upvotePost(threadIdNum, post.id as number)} variant="link">
                 <i className="fa fa-arrow-up" style={{ color: 'green' }} /> {/* Up arrow with red color */}

@@ -34,6 +34,7 @@ export interface ThreadDTO {
 
 export interface PostDTO {
     id?: number
+    user: userDTO
     threadId: number
     content: string
     upVotes: number
@@ -41,6 +42,17 @@ export interface PostDTO {
     createdAt?: Date
     updatedAt?: Date
     comments: CommentDTO[]
+}
+
+export interface userDTO {
+    id: number
+    username: string
+    lvl: number
+    title: string
+    email?: string
+    password?: string
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 export interface CommentDTO {
