@@ -1,18 +1,17 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-// const breadcrumbStyle = {
-//   backgroundColor: '#007bff', // Background color matching the navbar
-//   padding: '10px', // Adjust the padding as needed
-//   marginRight: '20px', // Move it a little to the right
-//   borderRadius: '4px', // Rounded corners
-// };
+const breadcrumbContainerStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end', 
+  marginRight: '15px',
+};
 
 const linkStyle = {
-    color: '#007bff', 
-    textDecoration: 'none',
-    paddingLeft: '4px',
-  };
+  color: '#007bff',
+  textDecoration: 'none',
+  paddingRight: '2px',
+};
 
 const Breadcrumbs = () => {
   const location = useLocation();
@@ -20,7 +19,7 @@ const Breadcrumbs = () => {
 
   return (
     <nav aria-label="breadcrumb">
-      <ol className="breadcrumb">
+      <ol className="breadcrumb" style={breadcrumbContainerStyle}>
         <li className="breadcrumb-item">
           <Link to="/" style={linkStyle}>
             home

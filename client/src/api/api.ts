@@ -11,6 +11,7 @@ export interface CourseDTO {
     courseName: string
     description: string
     schoolId: number
+    tags: string[]
 }
 
 export interface SearchCourseDTO {
@@ -28,6 +29,7 @@ export interface ThreadDTO {
     createdAt?: Date
     updatedAt?: Date
     posts: PostDTO[]
+    tags: string[]
 }
 
 export interface PostDTO {
