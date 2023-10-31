@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './searchBar.css';
+import Modal from 'react-bootstrap/Modal';
+import { useAuth } from './authContext';
 
 // Include Bootstrap CSS classes (assuming you've included Bootstrap in your project)
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,11 +18,22 @@ const NavBar = (props: NavbarProps) => {
     email: 'yeehaw@yemail.com',
     isAdmin: true,
   };
-  const authenticated = true;
+  // const authenticated = false;
 
   // search stuff
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  // const [authenticated, setAuthenticated] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  // const handleLogin = () => {
+  //   setAuthenticated(true);
+  //   setShowModal(false); // Close the modal after successful login
+  // };
 
   // Function to handle search input change
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +68,8 @@ const NavBar = (props: NavbarProps) => {
       requiresAdmin: true,
     },
   ];
+
+  const { authenticated, login, logout } = useAuth();
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -93,25 +108,65 @@ const NavBar = (props: NavbarProps) => {
       </div>
 
         {authenticated ? (
-          <div className="ms-auto d-flex align-items-center"> {/* Use ml-auto and d-flex to push the content to the right corner */}
-		        <span className="navbar-text px-4">{user ? user.name : null}</span>
-            {/* <button
-              className="btn btn-outline-secondary mr-4"
-              onClick={props.toggleSideMenu}
-            >
-              Instructions
-            </button> */}
-            <a href="/api/session/logout" className="btn btn-outline-light px-4">
+          <div className="ms-auto d-flex align-items-center">
+            <span className="navbar-text px-4">{user ? user.name : null}</span>
+            <button className="btn btn-outline-light px-4" onClick={logout}>
               Logout
-            </a>
+            </button>
           </div>
         ) : (
-          <a href="/api/session/login" className="btn btn-outline-light px-4">
+          <button className="btn btn-outline-light px-4" onClick={openModal}>
             Login
-          </a>
+          </button>
         )}
       </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Login / Register</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+
+        <form>
+            <div className="mb-3">
+            <label htmlFor="username" className="form-label">
+              Username
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              placeholder="Enter your username"
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              placeholder="Enter your password"
+            />
+          </div>
+          <button type="submit" 
+          className="btn btn-primary"
+          onClick={login}>
+            Login
+          </button>
+        </form>
+       
+      </Modal.Body>
+      <Modal.Footer>
+        <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+          Close
+        </button>
+        {/* You can add a "Submit" button if needed */}
+      </Modal.Footer>
+      </Modal>
     </nav>
+
   );
 };
 

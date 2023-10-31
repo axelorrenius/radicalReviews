@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { InternalAPI } from './api/api';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'; // Import Switch
+import { AuthProvider } from './components/authContext';
 
 import Homepage from './components/homepage';
 import Courses from './components/courses';
@@ -35,6 +36,7 @@ function App() {
 
   return (
     <Router>
+    <AuthProvider>
     <Container>
       <NavBar toggleSideMenu={toggleSideMenu} />
       <Breadcrumbs />
@@ -47,6 +49,7 @@ function App() {
         </Switch>
       {/* <SideMenu isOpen={sideMenuIsOpen} toggleOpen={toggleSideMenu} /> */}
     </Container>
+    </AuthProvider>
     </Router>
   );
 }

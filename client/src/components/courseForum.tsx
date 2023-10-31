@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { formatDistanceToNow } from 'date-fns';
 import './timeline.css';
 
 
