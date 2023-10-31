@@ -12,6 +12,7 @@ export interface CourseDTO {
     description: string
     schoolId: number
     tags: string[]
+    courseRound?: string
 }
 
 export interface SearchCourseDTO {
@@ -26,10 +27,11 @@ export interface ThreadDTO {
     upVotes: number
     downVotes: number
     content: string
-    createdAt?: Date
+    createdAt: Date
     updatedAt?: Date
     posts: PostDTO[]
     tags: string[]
+    courseRound?: string
 }
 
 export interface PostDTO {
