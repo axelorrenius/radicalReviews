@@ -205,6 +205,15 @@ function CourseDetail() {
     handleShow(); // Show the modal when the button is clicked
   };
 
+  const startDate = new Date('2018-01-01').getTime();
+  const endDate = new Date('2024-01-01').getTime();
+  const referencePoints = [];
+  const interval = 1000 * 60 * 60 * 24 * 365; // 30 days in milliseconds
+
+  for (let currentDate = new Date(startDate).getTime(); currentDate <= new Date(endDate).getTime(); currentDate += interval) {
+    referencePoints.push(new Date(currentDate));
+  }
+  
   const calculateDotPosition = (threadDate: Date) => {
     const startDate = new Date('2018-01-01').getTime();
     const endDate = new Date('2024-01-01').getTime();
@@ -216,11 +225,10 @@ function CourseDetail() {
 
   return (
     <div>
-      <h2>Course Details</h2>
-      <p>Course ID: {courseId}</p>
+      <h2>Course Details Put course name Here</h2>
 
-      <div>
-        <label>Select Course Round: </label>
+      <div style={{ marginLeft: '10px' }}>
+        <label style={{ paddingRight: '10px' }}>Select Course Round: </label>
         <select onChange={handleCourseRoundChange} value={selectedCourseRound}>
           <option value="">All</option>
           {courseRounds.map((round) => (
@@ -247,6 +255,17 @@ function CourseDetail() {
             style={{ left: calculateDotPosition(assignment.dueDate) }}
           ></div>
         ))}
+
+        <div className="reference-points">
+        {referencePoints.map((point, index) => (
+          <div 
+            key={index} 
+            className="timeline-reference-point"
+            style={{ left: calculateDotPosition(point)}}>
+            {point.getFullYear()}
+          </div>
+        ))}
+        </div>
       </div>
 
       <Tab.Container id="course-tabs" defaultActiveKey="threads">

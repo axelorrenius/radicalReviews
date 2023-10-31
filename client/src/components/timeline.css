@@ -5,7 +5,7 @@
     margin-top: 10px; /* Adjust the margin as needed */
     margin-left: 30px; /* Add margin to move the timeline in from the left edge */
     margin-right: 30px; /* Add margin to move the timeline in from the right edge */
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
   
   .timeline-dot {
@@ -29,4 +29,15 @@
   transform: translate(-50%, -50%);
   cursor: pointer; /* Add a pointer cursor to the dots */
 }
-  
+
+.reference-points {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px; /* Adjust this margin to control the vertical spacing */
+}
+
+.timeline-reference-point {
+  width: 30px; /* Adjust the width of each reference point as needed */
+  text-align: center;
+  margin-top: 10px;
+}
