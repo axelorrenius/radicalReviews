@@ -18,22 +18,15 @@ const NavBar = (props: NavbarProps) => {
     email: 'yeehaw@yemail.com',
     isAdmin: true,
   };
-  // const authenticated = false;
 
   // search stuff
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  // const [authenticated, setAuthenticated] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
   const openModal = () => {
     setShowModal(true);
   };
-
-  // const handleLogin = () => {
-  //   setAuthenticated(true);
-  //   setShowModal(false); // Close the modal after successful login
-  // };
 
   // Function to handle search input change
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
