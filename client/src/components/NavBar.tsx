@@ -21,7 +21,7 @@ const NavBar = (props: NavbarProps) => {
     const openModal = () => {
         setShowModal(true)
     }
-    const { logout, authenticatedUser } = useAuth()
+    const { logout, authenticatedUser, selectedSchool } = useAuth()
     console.log(authenticatedUser)
 
     // Function to handle search input change
@@ -50,7 +50,7 @@ const NavBar = (props: NavbarProps) => {
 
     const menuItems = [
         {
-            title: "Home",
+            title: "Schools",
             pageURL: "/",
             requiresAdmin: false
         },
@@ -81,7 +81,11 @@ const NavBar = (props: NavbarProps) => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Search..."
+                        placeholder={
+                            selectedSchool?.schoolName
+                                ? `Search within ${selectedSchool.schoolName}...`
+                                : "Search..."
+                        }
                         value={searchInput}
                         onChange={handleSearchInputChange}
                     />

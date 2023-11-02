@@ -1,15 +1,11 @@
-import {
-    createContext,
-    useContext,
-    useState,
-    ReactNode,
-    useEffect
-} from "react"
-import { AuthenticatedUser } from "../api/api"
+import { createContext, useContext, useState, ReactNode } from "react"
+import { AuthenticatedUser, InternalAPI, SchoolDTO } from "../api/api"
 
 interface AuthContextType {
     authenticatedUser: AuthenticatedUser | null
     sessionToken: string | null
+    selectedSchool: SchoolDTO | null
+    setSchool: (school: SchoolDTO) => void
     login: (user: AuthenticatedUser, token: string) => void
     logout: () => void
 }
@@ -28,6 +24,8 @@ interface AuthProviderProps {
     children: ReactNode
 }
 
+const server = new InternalAPI()
+
 export function AuthProvider({ children }: AuthProviderProps) {
     const [authenticatedUser, setAuthenticatedUser] =
         useState<AuthenticatedUser | null>(
@@ -39,6 +37,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const [sessionToken, setSessionToken] = useState<string | null>(
         localStorage.getItem("sessionToken")
+    )
+
+    const [selectedSchool, setSelectedSchool] = useState<SchoolDTO | null>(
+        localStorage.getItem("selectedSchool")
+            ? JSON.parse(localStorage.getItem("selectedSchool") || "")
+            : null
     )
 
     const login = (user: AuthenticatedUser, token: string) => {
@@ -55,11 +59,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setSessionToken("")
     }
 
+    const setSchool = (school: SchoolDTO) => {
+        if (!school || !school.id) return
+        localStorage.setItem("selectedSchool", JSON.stringify(school))
+        setSelectedSchool(school)
+        if (authenticatedUser && authenticatedUser.id)
+            server.setPreferredSchool(school.id).then(() => console.log("done"))
+    }
+
     return (
         <AuthContext.Provider
             value={{
                 login,
                 logout,
+                setSchool,
+                selectedSchool,
                 authenticatedUser,
                 sessionToken
             }}

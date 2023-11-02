@@ -16,12 +16,18 @@ export class School {
     @Property()
     schoolName!: string
 
+    @Property({ nullable: true })
+    location!: string
+
+    @Property({ nullable: true })
+    imageUrl?: string
+
     @Property()
     description!: string
 
     @OneToMany(() => Course, (course) => course.school)
-    courses: Collection<Course> = new Collection<Course>(this)
+    courses!: Collection<Course>
 
     @OneToMany(() => User, (user) => user.school)
-    users: Collection<User> = new Collection<User>(this)
+    users!: Collection<User>
 }

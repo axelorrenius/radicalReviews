@@ -11,9 +11,4 @@ export class TagInstance {
 
     @ManyToOne(() => Tag)
     tag!: Tag
-
-    constructor(entityId: number, tag: Tag) {
-        this.entityId = entityId
-        this.tag = tag
-    }
 }

@@ -24,10 +24,16 @@ export class User {
     email!: string
 
     @Property({ nullable: true })
+    avatar?: string
+
+    @Property({ nullable: true })
     phoneNumber?: string
 
     @Property()
     password!: string
+
+    @Property({ default: 0 })
+    level!: number
 
     @Property({ default: 0 })
     experience!: number

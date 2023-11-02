@@ -1,4 +1,5 @@
 import {
+    Collection,
     Entity,
     ManyToOne,
     OneToMany,
@@ -29,7 +30,7 @@ export class CourseInstance {
     course!: Course
 
     @OneToMany(() => UserCourse, (userCourse) => userCourse.course)
-    userCourses!: UserCourse[]
+    userCourses!: Collection<UserCourse>
 
     constructor(course: Course) {
         this.course = course

@@ -40,7 +40,7 @@ export class Thread {
     updatedBy!: User
 
     @OneToMany(() => Post, (post) => post.thread)
-    posts: Collection<Post> = new Collection<Post>(this)
+    posts!: Collection<Post>
 
     @ManyToOne(() => Course)
     course!: Course

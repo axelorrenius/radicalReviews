@@ -20,7 +20,7 @@ export class Tag {
     entityType!: EntityType
 
     @OneToMany(() => TagInstance, (tagInstance) => tagInstance.tag)
-    tagInstances: Collection<TagInstance> = new Collection<TagInstance>(this)
+    tagInstances!: Collection<TagInstance>
 
     constructor(name: string, entityType: EntityType) {
         this.name = name

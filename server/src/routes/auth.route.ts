@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify"
 import { controllers as c } from "../controllers"
 
-export default async function authRoute(
+export default async function authRoutes(
     fastify: FastifyInstance,
     options: FastifyPluginOptions
 ) {

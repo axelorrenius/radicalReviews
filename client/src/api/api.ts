@@ -1,18 +1,18 @@
-import { Course } from "./models/course.model"
-
 export interface SchoolDTO {
     id: number
     schoolName: string
     description: string
+    location?: string
+    imageUrl?: string
 }
 
 export interface CourseDTO {
-    id: number
+    id?: number
+    courseCode: string
     courseName: string
     description: string
     schoolId: number
-    tags: string[]
-    courseRound?: string
+    tags?: string[]
 }
 
 export interface SearchCourseDTO {
@@ -78,20 +78,32 @@ export interface AuthResponse {
     success: boolean
 }
 
+export interface CourseResponse {
+    course?: CourseDTO
+    reason?: string
+    success: boolean
+}
+
 export class InternalAPI {
     private endpoint = "http://localhost:8080"
     private schools = "/api/schools"
     private courses = "/api/courses"
     private threads = "/api/threads"
+    private user = "/api/user"
     private auth = "/api/auth"
 
     constructor() {}
+
+    get authToken() {
+        return localStorage.getItem("sessionToken")
+    }
 
     public async post<T, U>(endpoint: string, body: T): Promise<U> {
         const response = await fetch(endpoint, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + this.authToken || ""
             },
             body: JSON.stringify(body)
         })
@@ -100,7 +112,11 @@ export class InternalAPI {
     }
 
     public async get<T>(endpoint: string): Promise<T> {
-        const response = await fetch(endpoint)
+        const response = await fetch(endpoint, {
+            headers: {
+                Authorization: "Bearer " + this.authToken || ""
+            }
+        })
         return response.json()
     }
 
@@ -119,7 +135,7 @@ export class InternalAPI {
         return await this.post(this.endpoint + this.auth + "/login", values)
     }
 
-    public async saveCourse(dto: CourseDTO): Promise<CourseDTO> {
+    public async saveCourse(dto: CourseDTO): Promise<CourseResponse> {
         return await this.post(this.endpoint + this.courses, dto)
     }
 
@@ -131,9 +147,8 @@ export class InternalAPI {
     }
 
     public async getCourses(schoolId: number): Promise<CourseDTO[]> {
-        console.log(this.endpoint + this.courses + "/bySchool/" + schoolId)
         return await this.get<CourseDTO[]>(
-            this.endpoint + this.courses + "/bySchool/" + schoolId
+            this.endpoint + this.courses + "/by-school/" + schoolId
         )
     }
 
@@ -192,7 +207,18 @@ export class InternalAPI {
         )
     }
 
+    public async getSchools(): Promise<SchoolDTO[]> {
+        return await this.get<SchoolDTO[]>(this.endpoint + this.schools)
+    }
+
     public async saveSchool(dto: SchoolDTO): Promise<SchoolDTO> {
         return await this.post(this.endpoint + this.schools, dto)
+    }
+
+    public async setPreferredSchool(schoolId: number): Promise<void> {
+        return await this.post(
+            this.endpoint + this.user + "/preferred-school",
+            { schoolId }
+        )
     }
 }

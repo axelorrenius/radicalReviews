@@ -4,7 +4,8 @@ import {
     ManyToOne,
     OneToMany,
     PrimaryKey,
-    Property
+    Property,
+    types
 } from "@mikro-orm/core"
 import { Thread } from "./thread.entity"
 import { School } from "./school.entity"
@@ -13,7 +14,7 @@ import { CourseInstance } from "./course-instance.entity"
 @Entity()
 export class Course {
     @PrimaryKey()
-    id!: number // ska nog va en string tex ME2004
+    id!: number
 
     @Property()
     courseName!: string
@@ -21,18 +22,17 @@ export class Course {
     @Property()
     courseCode!: string
 
-    @Property()
+    @Property({ type: types.text })
     description!: string
 
     @ManyToOne(() => School)
     school!: School
 
     @OneToMany(() => Thread, (thread) => thread.course)
-    threads: Collection<Thread> = new Collection<Thread>(this)
+    threads!: Collection<Thread>
 
     @OneToMany(() => CourseInstance, (courseInstance) => courseInstance.course)
-    courseInstances: Collection<CourseInstance> =
-        new Collection<CourseInstance>(this)
+    courseInstances!: Collection<CourseInstance>
 
-    tags?: string[]
+    public tags?: string[]
 }

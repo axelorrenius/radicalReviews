@@ -19,7 +19,8 @@ export default async function courseRoutes(
         const { user } = request
         const { id, courseName, courseCode, description, schoolId, tags } =
             request.body
-        return await c?.courseController.createOrUpdateCourse(user, {
+
+        const course = await c?.courseController.createOrUpdateCourse(user, {
             id: id || null,
             courseCode,
             courseName,
@@ -27,6 +28,8 @@ export default async function courseRoutes(
             schoolId,
             tags
         })
+        console.log(course)
+        return reply.code(200).send(course)
     })
     fastify.post<{ Body: { query: string; schoolId: number } }>(
         "/search",
@@ -45,11 +48,23 @@ export default async function courseRoutes(
     )
 
     fastify.get<{ Params: { schoolId: number } }>(
-        "/bySchool/:schoolId",
+        "/by-school/:schoolId",
         async (request, reply) => {
             const { schoolId } = request.params
-            return (
+            const courses =
                 (await c?.courseController.getCoursesBySchool(schoolId)) || []
+
+            return reply.code(200).send(
+                courses.map((course) => {
+                    return {
+                        id: course.id,
+                        schoolId: course.school.id,
+                        courseCode: course.courseCode,
+                        courseName: course.courseName,
+                        description: course.description,
+                        tags: course.tags
+                    }
+                })
             )
         }
     )

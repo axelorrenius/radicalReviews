@@ -58,36 +58,44 @@ export class CourseController {
         const { id, schoolId, courseCode, courseName, description, tags } =
             options
 
-        const course = options.id
-            ? await this.em.findOne(Course, { id: id })
-            : this.em.create(Course, { ...new Course() })
+        if (!schoolId)
+            return {
+                success: false,
+                reason: "School is not selected"
+            }
 
-        if (!course) {
-            return null
-        }
+        const existingCourse = await this.em.findOne(Course, {
+            courseCode: courseCode
+        })
+        if (existingCourse && existingCourse.id)
+            return {
+                success: false,
+                reason: "Course code already exists, create a new course round instead"
+            }
 
-        if (!id) {
-            if (!schoolId) return null
-            const existingCourse = await this.em.findOne(Course, {
-                courseCode: courseCode
-            })
-            if (existingCourse) return null
-            course.school = this.em.getReference(School, schoolId)
-            this.addExperience(user.id, 20)
-        }
+        if (!courseCode || !courseName || !description)
+            return {
+                success: false,
+                reason: "Missing required fields"
+            }
 
-        if (!courseCode || !courseName || !description) return null
+        const course = this.em.create(Course, {
+            ...new Course(),
+            courseCode,
+            courseName,
+            description,
+            school: this.em.getReference(School, schoolId)
+        })
 
-        course.courseCode = courseCode
-        course.courseName = courseName
-        course.description = description
+        await this.addExperience(user.id, 20)
 
         this.em.persist(course)
+        if (!course.id) await this.em.flush()
+        console.log(tags)
+        if (tags)
+            await this.addTags(EntityType.Course, course.id, options.tags || [])
         await this.em.flush()
-        if (tags) this.addTags(EntityType.Course, course.id, options.tags || [])
-
-        await this.em.flush()
-        return course
+        return { course: course, success: true }
     }
 
     async createOrUpdateCourseInstance(
@@ -124,7 +132,7 @@ export class CourseController {
         }
 
         if (!id) {
-            this.addExperience(user.id, 10)
+            await this.addExperience(user.id, 10)
         }
 
         courseInstance.roundName = roundName
@@ -187,7 +195,7 @@ export class CourseController {
         if (!thread.id) {
             thread.course = this.em.getReference(Course, courseId)
             thread.createdBy = this.em.getReference(User, user.id)
-            this.addExperience(user.id, 10)
+            await this.addExperience(user.id, 10)
         } else {
             thread.updatedBy = this.em.getReference(User, user.id)
         }
@@ -222,7 +230,7 @@ export class CourseController {
             post.createdBy = this.em.getReference(User, user.id)
             post.upVotes = 0
             post.downVotes = 0
-            this.addExperience(user.id, 5)
+            await this.addExperience(user.id, 5)
         }
 
         post.content = content
@@ -233,6 +241,7 @@ export class CourseController {
     }
 
     async addTags(entityType: EntityType, entityId: number, tags: string[]) {
+        tags = [...new Set(tags)]
         const existingTags = await (
             await this.em.find(Tag, { entityType: entityType, name: tags })
         ).reduce(
@@ -244,7 +253,10 @@ export class CourseController {
         )
 
         const existingsTagInstances = await (
-            await this.em.find(TagInstance, { entityId: entityId })
+            await this.em.find(TagInstance, {
+                entityId: entityId,
+                tag: { entityType }
+            })
         ).reduce(
             (acc, tagInstance) => {
                 acc[tagInstance.tag.id] = tagInstance
@@ -260,11 +272,14 @@ export class CourseController {
 
             if (existingsTagInstances[tag.id]) continue
 
+            console.log(tagName)
+
             const tagInstance = this.em.create(TagInstance, {
-                ...new TagInstance(entityId, tag)
+                ...new TagInstance(),
+                tag,
+                entityId
             })
             this.em.persist(tagInstance)
-            this.em.persist(tag)
         }
     }
 
@@ -278,7 +293,6 @@ export class CourseController {
             { entityId: ids, tag: { entityType: entityType } },
             { populate: ["tag"] }
         )
-
         const tags = tagInstances.reduce(
             (acc, tagInstance) => {
                 if (!acc[tagInstance.entityId])
@@ -291,7 +305,7 @@ export class CourseController {
         this.mapTags(entities, tags)
     }
 
-    async mapTags<T extends { id: number; tags?: string[] }>(
+    mapTags<T extends { id: number; tags?: string[] }>(
         entities: T[],
         tags: { [entityId: number]: string[] }
     ) {
@@ -350,6 +364,13 @@ export class CourseController {
         return await this.em.find(School, {})
     }
 
+    async setPreferredSchool(userId: number, schoolId: number) {
+        const user = this.em.getReference(User, userId)
+        const school = this.em.getReference(School, schoolId)
+        user.school = school
+        await this.em.persistAndFlush(user)
+    }
+
     async voteOnPost(postId: number, up: boolean): Promise<void> {
         const post = await this.em.findOne(Post, { id: postId })
 
@@ -359,7 +380,7 @@ export class CourseController {
 
         if (up) {
             post.upVotes += 1
-            this.addExperience(post.createdBy.id, 1)
+            await this.addExperience(post.createdBy.id, 1)
         } else {
             post.downVotes += 1
         }
@@ -377,7 +398,7 @@ export class CourseController {
 
         if (up) {
             thread.upVotes += 1
-            this.addExperience(thread.createdBy.id, 1)
+            await this.addExperience(thread.createdBy.id, 1)
         } else {
             thread.downVotes += 1
         }
@@ -387,7 +408,8 @@ export class CourseController {
     }
 
     async addExperience(userId: number, experience: number) {
-        const user = this.em.getReference(User, userId)
+        const user = await this.em.findOne(User, { id: userId })
+        if (!user) return
         user.experience += experience
         await this.em.persist(user)
     }

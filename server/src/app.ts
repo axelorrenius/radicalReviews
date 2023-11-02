@@ -2,12 +2,13 @@ import fastify, { FastifyInstance, FastifyRequest } from "fastify"
 import { RequestContext } from "@mikro-orm/core"
 import { initORM } from "./database/db"
 import { initControllers } from "./controllers"
-import courseRoutes from "./routes/course.route"
-import schoolRoutes from "./routes/school.route"
 import { controllers as c } from "./controllers"
-import threadRoutes from "./routes/thread.route"
 import { RequestUser } from "./fastify"
-import authRoute from "./routes/auth.route"
+import courseRoutes from "./routes/course.route"
+import threadRoutes from "./routes/thread.route"
+import schoolRoutes from "./routes/school.route"
+import authRoutes from "./routes/auth.route"
+import userRoutes from "./routes/user.route"
 
 export const build = async (opts: {}) => {
     const db = await initORM()
@@ -30,20 +31,16 @@ export const build = async (opts: {}) => {
         // await parseToken(cp.AuthController)(request, reply)
         const { authorization } = request.headers
         let user: RequestUser = {
-            id: 6,
-            username: "Tobias Lord",
-            email: "tlord@kth.se"
+            id: 0,
+            username: "",
+            email: ""
         }
 
         if (authorization) {
             try {
                 const token = authorization?.split(" ")[1]
                 if (token) {
-                    user = c?.authController.verifyToken(token) || {
-                        id: 0,
-                        username: "",
-                        email: ""
-                    }
+                    user = c?.authController.verifyToken(token) || user
                 }
             } catch (e) {
                 app.log.error("Failed to authenticate user")
@@ -56,7 +53,7 @@ export const build = async (opts: {}) => {
         res.header("Access-Control-Allow-Origin", "*")
         res.header(
             "Access-Control-Allow-Headers",
-            "Origin, Content-Type, X-Auth-Token"
+            "Origin, Content-Type, X-Auth-Token, Authorization"
         )
         res.header(
             "Access-Control-Allow-Methods",
@@ -85,11 +82,14 @@ const registerRoutes = (app: FastifyInstance) => {
             reply.send("OK")
         }
     })
-    app.register(authRoute, {
+    app.register(authRoutes, {
         prefix: "/api/auth"
     })
     app.register(courseRoutes, {
         prefix: "/api/courses"
+    })
+    app.register(userRoutes, {
+        prefix: "/api/user"
     })
     app.register(schoolRoutes, {
         prefix: "/api/schools"
