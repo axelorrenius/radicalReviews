@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { InternalAPI } from './api/api';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'; // Import Switch
+import { AuthProvider } from './components/authContext';
 
 import Homepage from './components/homepage';
 import Courses from './components/courses';
@@ -11,6 +12,7 @@ import { Container } from './components/_atoms';
 import NavBar from './components/NavBar';
 import CourseForum from './components/courseForum';
 import Post from './components/thread';
+import Breadcrumbs from './components/breadcrumbs';
 // import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
@@ -34,8 +36,10 @@ function App() {
 
   return (
     <Router>
+    <AuthProvider>
     <Container>
       <NavBar toggleSideMenu={toggleSideMenu} />
+      <Breadcrumbs />
         <Switch>
           <Route path="/course/:courseId" component={CourseForum} />
           <Route path="/thread/:threadId" component={Post} />
@@ -45,6 +49,7 @@ function App() {
         </Switch>
       {/* <SideMenu isOpen={sideMenuIsOpen} toggleOpen={toggleSideMenu} /> */}
     </Container>
+    </AuthProvider>
     </Router>
   );
 }

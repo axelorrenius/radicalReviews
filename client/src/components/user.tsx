@@ -3,12 +3,14 @@ import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function User() {
   const mockOverviewData = {
     name: 'John Doe',
     email: 'johndoe@example.com',
     bio: 'Web Developer',
+    lvl: 'LvL 5, McMathGeekGangLeader'
   };
 
   const mockPosts = [
@@ -42,6 +44,36 @@ function User() {
     },
   ];
 
+  const mockQuests = [
+    {
+      title: 'Answer 5 questions',
+      description: 'Help others by answering 5 questions.',
+      progress: 3,
+      total: 5,
+    },
+    {
+      title: 'Ask 2 questions',
+      description: 'Ask 2 questions to get started.',
+      progress: 0,
+      total: 2,
+    },
+  ];
+
+  const renderQuests = () => {
+    return (
+      <div>
+        <h3>Quests</h3>
+        {mockQuests.map((quest, index) => (
+          <div key={index}>
+            <h5>{quest.title}</h5>
+            <p>{quest.description}</p>
+            <ProgressBar now={(quest.progress / quest.total) * 100} label={`${quest.progress}/${quest.total}`} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
       <h2>User Profile</h2>
@@ -52,6 +84,9 @@ function User() {
             <Nav variant="tabs">
               <Nav.Item>
                 <Nav.Link eventKey="overview">Overview</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="quests">Quests</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="posts">Posts</Nav.Link>
@@ -71,6 +106,10 @@ function User() {
                 <p>Name: {mockOverviewData.name}</p>
                 <p>Email: {mockOverviewData.email}</p>
                 <p>Bio: {mockOverviewData.bio}</p>
+                <p>Lvl: {mockOverviewData.lvl}</p>
+              </Tab.Pane>
+              <Tab.Pane eventKey="quests">
+                {renderQuests()}
               </Tab.Pane>
               <Tab.Pane eventKey="posts">
                 <h3>Posts</h3>

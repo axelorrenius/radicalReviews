@@ -1,0 +1,43 @@
+.timeline {
+    position: relative;
+    height: 15px; /* Adjust the height of the timeline */
+    background-color: #ccc; /* Adjust the background color of the timeline */
+    margin-top: 10px; /* Adjust the margin as needed */
+    margin-left: 30px; /* Add margin to move the timeline in from the left edge */
+    margin-right: 30px; /* Add margin to move the timeline in from the right edge */
+    margin-bottom: 20px;
+}
+  
+  .timeline-dot {
+    position: absolute;
+    width: 8px; /* Adjust the width of the dots */
+    height: 8px; /* Adjust the height of the dots */
+    background-color: #007bff; /* Adjust the dot color */
+    border-radius: 50%;
+    top: 50%; /* Position the dots in the middle of the timeline */
+    transform: translate(-50%, -50%);
+    cursor: pointer; /* Add a pointer cursor to the dots */
+  }
+
+  .assignment-dot {
+  position: absolute;
+  width: 10px; /* Adjust the width of the assignment dots */
+  height: 10px; /* Adjust the height of the assignment dots */
+  background-color: #ff5733; /* Assign a different background color to the assignment dots */
+  border-radius: 50%;
+  top: 50%; /* Position the assignment dots in the middle of the timeline */
+  transform: translate(-50%, -50%);
+  cursor: pointer; /* Add a pointer cursor to the dots */
+}
+
+.reference-points {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px; /* Adjust this margin to control the vertical spacing */
+}
+
+.timeline-reference-point {
+  width: 30px; /* Adjust the width of each reference point as needed */
+  text-align: center;
+  margin-top: 10px;
+}
