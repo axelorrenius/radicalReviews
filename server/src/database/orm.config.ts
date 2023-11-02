@@ -16,11 +16,11 @@ const config: Options = {
     },
     entitiesTs: ["src/**/*.entity.ts"],
     entities: ["dist/**/*.entity.js"],
-    host: "radicalreviews-2.cmm29ljdrxgc.eu-west-1.rds.amazonaws.com",
-    user: "postgres",
-    password: "Postgres123",
+    host: process.env.PG_HOST,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
     port: 5432,
-    dbName: "radicalreviews",
+    dbName: process.env.PG_DATABASE,
     type: "postgresql",
     driverOptions: {
         connection: {

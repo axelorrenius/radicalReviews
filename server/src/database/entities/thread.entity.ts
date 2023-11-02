@@ -1,4 +1,5 @@
 import {
+    Collection,
     Entity,
     ManyToOne,
     OneToMany,
@@ -39,8 +40,10 @@ export class Thread {
     updatedBy!: User
 
     @OneToMany(() => Post, (post) => post.thread)
-    posts!: Post[]
+    posts: Collection<Post> = new Collection<Post>(this)
 
     @ManyToOne(() => Course)
     course!: Course
+
+    tags?: string[]
 }

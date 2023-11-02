@@ -1,4 +1,5 @@
 import {
+    Collection,
     Entity,
     ManyToOne,
     OneToMany,
@@ -9,6 +10,7 @@ import { School } from "./school.entity"
 import { UserCourse } from "./user-course.entity"
 import { Post } from "./post.entity"
 import { Comment } from "./post-comment.entity"
+import { Thread } from "./thread.entity"
 
 @Entity()
 export class User {
@@ -21,17 +23,20 @@ export class User {
     @Property()
     email!: string
 
-    @Property()
-    phoneNumber!: string
+    @Property({ nullable: true })
+    phoneNumber?: string
 
     @Property()
     password!: string
 
-    @Property()
-    salt!: string
+    @Property({ default: 0 })
+    experience!: number
 
     @Property({ nullable: true })
-    programDescription!: string
+    programDescription?: string
+
+    @Property({ nullable: true })
+    description?: string
 
     @Property({ onCreate: () => new Date() })
     createdAt!: Date
@@ -40,14 +45,17 @@ export class User {
     updatedAt: Date = new Date()
 
     @ManyToOne(() => School, { nullable: true })
-    school!: School
+    school?: School
 
     @OneToMany(() => UserCourse, (userCourse) => userCourse.user)
-    userCourses!: UserCourse[]
+    userCourses: Collection<UserCourse> = new Collection<UserCourse>(this)
+
+    @OneToMany(() => Thread, (thread) => thread.createdBy)
+    threads: Collection<Thread> = new Collection<Thread>(this)
 
     @OneToMany(() => Post, (post) => post.createdBy)
-    posts!: Post[]
+    posts: Collection<Post> = new Collection<Post>(this)
 
     @OneToMany(() => Comment, (post) => post.createdBy)
-    comments!: Comment[]
+    comments: Collection<Comment> = new Collection<Comment>(this)
 }

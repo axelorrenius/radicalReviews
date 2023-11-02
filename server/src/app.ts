@@ -1,11 +1,12 @@
-import fastify, { FastifyInstance } from "fastify"
+import fastify, { FastifyInstance, FastifyRequest } from "fastify"
 import { RequestContext } from "@mikro-orm/core"
 import { initORM } from "./database/db"
 import { initControllers } from "./controllers"
 import courseRoutes from "./routes/course.route"
 import schoolRoutes from "./routes/school.route"
-import { nextTick } from "process"
+import { controllers as c } from "./controllers"
 import threadRoutes from "./routes/thread.route"
+import { RequestUser } from "./fastify"
 
 export const build = async (opts: {}) => {
     const db = await initORM()
@@ -17,8 +18,30 @@ export const build = async (opts: {}) => {
         reply.code(200)
     })
 
-    app.addHook("onRequest", async (request, reply) => {
+    app.addHook("onRequest", async (request: FastifyRequest, reply) => {
         // await parseToken(cp.AuthController)(request, reply)
+        const { authorization } = request.headers
+        let user: RequestUser = {
+            id: 6,
+            username: "Tobias Lord",
+            email: "tlord@kth.se"
+        }
+
+        if (authorization) {
+            try {
+                const token = authorization?.split(" ")[1]
+                if (token) {
+                    user = c?.authController.verifyToken(token) || {
+                        id: 0,
+                        username: "",
+                        email: ""
+                    }
+                }
+            } catch (e) {
+                app.log.error("Failed to authenticate user")
+            }
+        }
+        request.user = user
     })
 
     app.addHook("onRequest", (req, res, next) => {

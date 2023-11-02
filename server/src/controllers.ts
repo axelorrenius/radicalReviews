@@ -1,8 +1,10 @@
+import { AuthController } from "./controllers/auth.controller"
 import { CourseController } from "./controllers/course.controller"
 import { initORM } from "./database/db"
 
 let controllers: {
     courseController: CourseController
+    authController: AuthController
 } | null = null
 
 export async function initControllers() {
@@ -10,7 +12,8 @@ export async function initControllers() {
         const db = await initORM()
 
         controllers = {
-            courseController: new CourseController(db.em)
+            courseController: new CourseController(db.em),
+            authController: new AuthController(db.em)
         }
     }
 }

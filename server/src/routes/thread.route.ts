@@ -13,6 +13,7 @@ interface ThreadDTO {
     createdAt: Date
     updatedAt: Date
     posts: PostDTO[]
+    tags: string[]
 }
 
 interface PostDTO {
@@ -55,6 +56,7 @@ export default async function threadRoutes(
                 createdAt: thread.createdAt,
                 updatedAt: thread.updatedAt,
                 courseId: thread.course.id,
+                tags: thread.tags || [],
                 posts: thread.posts.map((post) => {
                     return {
                         id: post.id,
@@ -81,14 +83,14 @@ export default async function threadRoutes(
 
     fastify.post<{ Body: ThreadDTO }>("", async (request, reply) => {
         const user = requestUser
-        const { id, courseId, title, content } = request.body
-        const result = await c?.courseController.createOrUpdateThread(
-            user,
+        const { id, courseId, title, content, tags } = request.body
+        const result = await c?.courseController.createOrUpdateThread(user, {
             id,
             courseId,
             title,
-            content
-        )
+            content,
+            tags
+        })
         return reply.code(200).send(result)
     })
 

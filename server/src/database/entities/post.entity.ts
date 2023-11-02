@@ -1,4 +1,5 @@
 import {
+    Collection,
     Entity,
     ManyToOne,
     OneToMany,
@@ -36,5 +37,5 @@ export class Post {
     thread!: Thread
 
     @OneToMany(() => Comment, (comment) => comment.post)
-    comments!: Comment[]
+    comments: Collection<Comment> = new Collection<Comment>(this)
 }

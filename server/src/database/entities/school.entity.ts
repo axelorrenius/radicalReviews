@@ -1,4 +1,10 @@
-import { Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core"
+import {
+    Collection,
+    Entity,
+    OneToMany,
+    PrimaryKey,
+    Property
+} from "@mikro-orm/core"
 import { User } from "./user.entity"
 import { Course } from "./course.entity"
 
@@ -14,8 +20,8 @@ export class School {
     description!: string
 
     @OneToMany(() => Course, (course) => course.school)
-    courses!: Course[]
+    courses: Collection<Course> = new Collection<Course>(this)
 
     @OneToMany(() => User, (user) => user.school)
-    users!: User[]
+    users: Collection<User> = new Collection<User>(this)
 }

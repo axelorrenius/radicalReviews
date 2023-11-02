@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core"
 import { User } from "./user.entity"
-import { Course } from "./course.entity"
 import { CourseRole } from "../enums"
+import { CourseInstance } from "./course-instance.entity"
 
 @Entity()
 export class UserCourse {
@@ -11,8 +11,8 @@ export class UserCourse {
     @ManyToOne(() => User)
     user!: User
 
-    @ManyToOne(() => Course)
-    course!: Course
+    @ManyToOne(() => CourseInstance)
+    course!: CourseInstance
 
     @Property()
     enrolledDate!: Date

@@ -1,4 +1,5 @@
 import {
+    Collection,
     Entity,
     ManyToOne,
     OneToMany,
@@ -7,7 +8,7 @@ import {
 } from "@mikro-orm/core"
 import { Thread } from "./thread.entity"
 import { School } from "./school.entity"
-import { UserCourse } from "./user-course.entity"
+import { CourseInstance } from "./course-instance.entity"
 
 @Entity()
 export class Course {
@@ -27,8 +28,11 @@ export class Course {
     school!: School
 
     @OneToMany(() => Thread, (thread) => thread.course)
-    threads!: Thread[]
+    threads: Collection<Thread> = new Collection<Thread>(this)
 
-    @OneToMany(() => UserCourse, (userCourse) => userCourse.course)
-    userCourses!: UserCourse[]
+    @OneToMany(() => CourseInstance, (courseInstance) => courseInstance.course)
+    courseInstances: Collection<CourseInstance> =
+        new Collection<CourseInstance>(this)
+
+    tags?: string[]
 }

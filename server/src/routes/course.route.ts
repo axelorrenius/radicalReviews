@@ -2,11 +2,13 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify"
 import { controllers as c } from "../controllers"
 //Routes for forum data
 
-interface CourseDTO {
+export interface CourseDTO {
     id: number
+    schoolId: number
+    courseCode: string
     courseName: string
     description: string
-    schoolId: number
+    tags?: string[]
 }
 
 export default async function courseRoutes(
@@ -14,13 +16,17 @@ export default async function courseRoutes(
     options: FastifyPluginOptions
 ) {
     fastify.post<{ Body: CourseDTO }>("", async (request, reply) => {
-        const { id, courseName, description, schoolId } = request.body
-        return await c?.courseController.createOrUpdateCourse(
-            id,
+        const { user } = request
+        const { id, courseName, courseCode, description, schoolId, tags } =
+            request.body
+        return await c?.courseController.createOrUpdateCourse(user, {
+            id: id || null,
+            courseCode,
             courseName,
             description,
-            schoolId
-        )
+            schoolId,
+            tags
+        })
     })
     fastify.post<{ Body: { query: string; schoolId: number } }>(
         "/search",
