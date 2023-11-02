@@ -13,6 +13,7 @@ import NavBar from './components/NavBar';
 import CourseForum from './components/courseForum';
 import Post from './components/thread';
 import Breadcrumbs from './components/breadcrumbs';
+import Register from './components/register';
 // import SideMenu from './components/sideMenu/sideMenu';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Switch>
           <Route path="/course/:courseId" component={CourseForum} />
           <Route path="/thread/:threadId" component={Post} />
+          <Route path="/register" component={Register} />
           <Route path="/courses" component={Courses} />
           <Route path="/user" component={User} />
           <Route path="/" component={Homepage} />

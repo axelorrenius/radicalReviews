@@ -8,20 +8,24 @@ export class AuthController {
     constructor(private em: EntityManager) {}
 
     private get secret() {
-        return process.env.SECRET as string
+        return process.env.AUTH_SECRET as string
     }
 
     public async getUserByUsername(email: string) {
-        return await this.em.findOne(User, { email })
+        return await this.em.findOne(User, {
+            $or: [{ email }, { username: email }]
+        })
     }
 
     public async createUser(email: string, password: string) {}
 
     private async hashPassword(password: string) {
+        console.log("HASH PASSWORD")
         return await bcrypt.hash(password.trim(), 10)
     }
 
     private createToken(user: User) {
+        console.log("CREATE TOKEN")
         const userValues = {
             id: user.id,
             username: user.username,
@@ -41,8 +45,12 @@ export class AuthController {
 
     public async login(username: string, passwordIn: string) {
         const user = await this.getUserByUsername(username)
+        console.log(user)
         if (!user) {
-            return
+            return {
+                success: false,
+                reason: "Could not authentiticate user"
+            }
         }
         const { password } = user
         const isPasswordCorrect = await bcrypt.compare(
@@ -51,12 +59,17 @@ export class AuthController {
         )
         if (isPasswordCorrect) {
             return {
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email
+                },
                 token: this.createToken(user),
                 success: true
             }
         }
 
-        return { success: false }
+        return { success: false, reason: "Could not authenticate user" }
     }
 
     public async register(data: {
@@ -97,10 +110,18 @@ export class AuthController {
             programDescription,
             description
         })
+        console.log(user)
         await this.em.persistAndFlush(user)
         const token = this.createToken(user)
 
+        console.log("HEJ")
+
         return {
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            },
             token,
             success: true
         }

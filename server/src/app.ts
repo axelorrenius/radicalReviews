@@ -7,6 +7,7 @@ import schoolRoutes from "./routes/school.route"
 import { controllers as c } from "./controllers"
 import threadRoutes from "./routes/thread.route"
 import { RequestUser } from "./fastify"
+import authRoute from "./routes/auth.route"
 
 export const build = async (opts: {}) => {
     const db = await initORM()
@@ -16,6 +17,13 @@ export const build = async (opts: {}) => {
 
     app.options("/*", async (request, reply) => {
         reply.code(200)
+    })
+    app.addHook("onRequest", (req, res, next) => {
+        /**
+         * Creates an isolated fork of the entity manager for each request,
+         * enabling concurrent isolated entity manager instances
+         */
+        RequestContext.create(db.orm.em, next)
     })
 
     app.addHook("onRequest", async (request: FastifyRequest, reply) => {
@@ -42,14 +50,6 @@ export const build = async (opts: {}) => {
             }
         }
         request.user = user
-    })
-
-    app.addHook("onRequest", (req, res, next) => {
-        /**
-         * Creates an isolated fork of the entity manager for each request,
-         * enabling concurrent isolated entity manager instances
-         */
-        RequestContext.create(db.orm.em, next)
     })
 
     app.addHook("preHandler", (req, res, next) => {
@@ -84,6 +84,9 @@ const registerRoutes = (app: FastifyInstance) => {
         {
             reply.send("OK")
         }
+    })
+    app.register(authRoute, {
+        prefix: "/api/auth"
     })
     app.register(courseRoutes, {
         prefix: "/api/courses"

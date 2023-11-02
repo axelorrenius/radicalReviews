@@ -28,6 +28,7 @@ export default async function authRoute(
             phoneNumber?: string
         }
     }>("/register", async (request, reply) => {
+        console.log(request.body)
         return await c?.authController.register(request.body)
     })
 }

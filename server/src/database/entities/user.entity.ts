@@ -48,14 +48,14 @@ export class User {
     school?: School
 
     @OneToMany(() => UserCourse, (userCourse) => userCourse.user)
-    userCourses: Collection<UserCourse> = new Collection<UserCourse>(this)
+    userCourses!: Collection<UserCourse>
 
     @OneToMany(() => Thread, (thread) => thread.createdBy)
-    threads: Collection<Thread> = new Collection<Thread>(this)
+    threads!: Collection<Thread>
 
     @OneToMany(() => Post, (post) => post.createdBy)
-    posts: Collection<Post> = new Collection<Post>(this)
+    posts!: Collection<Post>
 
     @OneToMany(() => Comment, (post) => post.createdBy)
-    comments: Collection<Comment> = new Collection<Comment>(this)
+    comments!: Collection<Comment>
 }
