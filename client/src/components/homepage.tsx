@@ -34,7 +34,7 @@ function Homepage() {
                                 <Card.Text>{school.description}</Card.Text>
                                 <Card.Link
                                     onClick={() => setSchool(school)}
-                                    href={`/school/${school.id}`}
+                                    href={`/courses`}
                                     className="btn btn-outline-dark px-4"
                                 >
                                     Pick
