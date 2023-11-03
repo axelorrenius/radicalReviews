@@ -5,7 +5,8 @@ import { requestUser } from "./util"
 
 interface ThreadDTO {
     id: number
-    courseId: number
+    courseId?: number
+    courseInstanceId: number
     title: string
     upVotes: number
     downVotes: number
@@ -55,7 +56,8 @@ export default async function threadRoutes(
                 content: thread.content,
                 createdAt: thread.createdAt,
                 updatedAt: thread.updatedAt,
-                courseId: thread.course.id,
+                courseInstanceId: thread.courseInstance.id,
+                courseId: thread.courseInstance.course.id,
                 tags: thread.tags || [],
                 posts: thread.posts.map((post) => {
                     return {
@@ -83,10 +85,10 @@ export default async function threadRoutes(
 
     fastify.post<{ Body: ThreadDTO }>("", async (request, reply) => {
         const user = requestUser
-        const { id, courseId, title, content, tags } = request.body
+        const { id, courseInstanceId, title, content, tags } = request.body
         const result = await c?.courseController.createOrUpdateThread(user, {
             id,
-            courseId,
+            courseInstanceId,
             title,
             content,
             tags

@@ -8,6 +8,7 @@ import {
 } from "@mikro-orm/core"
 import { Course } from "./course.entity"
 import { UserCourse } from "./user-course.entity"
+import { Thread } from "./thread.entity"
 
 @Entity()
 export class CourseInstance {
@@ -31,6 +32,9 @@ export class CourseInstance {
 
     @OneToMany(() => UserCourse, (userCourse) => userCourse.course)
     userCourses!: Collection<UserCourse>
+
+    @OneToMany(() => Thread, (thread) => thread.courseInstance)
+    threads!: Collection<Thread>
 
     constructor(course: Course) {
         this.course = course

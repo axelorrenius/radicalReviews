@@ -9,6 +9,7 @@ import {
 import { User } from "./user.entity"
 import { Post } from "./post.entity"
 import { Course } from "./course.entity"
+import { CourseInstance } from "./course-instance.entity"
 
 @Entity()
 export class Thread {
@@ -42,8 +43,8 @@ export class Thread {
     @OneToMany(() => Post, (post) => post.thread)
     posts!: Collection<Post>
 
-    @ManyToOne(() => Course)
-    course!: Course
+    @ManyToOne(() => CourseInstance)
+    courseInstance!: CourseInstance
 
     tags?: string[]
 }

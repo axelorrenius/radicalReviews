@@ -28,9 +28,6 @@ export class Course {
     @ManyToOne(() => School)
     school!: School
 
-    @OneToMany(() => Thread, (thread) => thread.course)
-    threads!: Collection<Thread>
-
     @OneToMany(() => CourseInstance, (courseInstance) => courseInstance.course)
     courseInstances!: Collection<CourseInstance>
 

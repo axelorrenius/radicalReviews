@@ -175,13 +175,13 @@ export class CourseController {
         user: RequestUser,
         options: {
             id: number | null
-            courseId: number
+            courseInstanceId: number
             title: string
             content: string
             tags?: string[]
         }
     ) {
-        const { id, courseId, title, content, tags } = options
+        const { id, courseInstanceId, title, content, tags } = options
         const thread = id
             ? await this.em.findOne(Thread, { id })
             : this.em.create(Thread, {
@@ -193,7 +193,10 @@ export class CourseController {
         }
 
         if (!thread.id) {
-            thread.course = this.em.getReference(Course, courseId)
+            thread.courseInstance = this.em.getReference(
+                CourseInstance,
+                courseInstanceId
+            )
             thread.createdBy = this.em.getReference(User, user.id)
             await this.addExperience(user.id, 10)
         } else {
@@ -328,7 +331,7 @@ export class CourseController {
         return await this.em.findOne(
             Course,
             { id: courseId },
-            { populate: ["school"] }
+            { populate: ["school", "courseInstances"] }
         )
     }
 
@@ -338,11 +341,14 @@ export class CourseController {
         return courses
     }
 
-    async getThreads(courseId: number): Promise<Thread[]> {
+    async getThreads(
+        courseId: number,
+        courseInstanceId?: number
+    ): Promise<Thread[]> {
         const threads = await this.em.find(
             Thread,
-            { course: courseId },
-            { populate: ["createdBy"] }
+            { courseInstance: { course: courseId, id: courseInstanceId } },
+            { populate: ["createdBy", "courseInstance"] }
         )
         await this.getTags(EntityType.Thread, threads)
         return threads

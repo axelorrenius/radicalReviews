@@ -6,6 +6,16 @@ export interface SchoolDTO {
     imageUrl?: string
 }
 
+export interface CourseInstanceDTO {
+    id?: number
+    courseId: number
+    course?: CourseDTO
+    roundName: string
+    roundStart: Date
+    roundEnd: Date
+    examDate?: Date
+}
+
 export interface CourseDTO {
     id?: number
     courseCode: string
@@ -13,6 +23,7 @@ export interface CourseDTO {
     description: string
     schoolId: number
     tags?: string[]
+    courseInstances?: CourseInstanceDTO[]
 }
 
 export interface SearchCourseDTO {
@@ -137,6 +148,15 @@ export class InternalAPI {
 
     public async saveCourse(dto: CourseDTO): Promise<CourseResponse> {
         return await this.post(this.endpoint + this.courses, dto)
+    }
+
+    public async saveCourseInstance(
+        dto: CourseInstanceDTO
+    ): Promise<CourseInstanceDTO> {
+        return await this.post(
+            this.endpoint + this.courses + "/" + dto.courseId + "/instance",
+            dto
+        )
     }
 
     public async searchCourse(search: SearchCourseDTO): Promise<CourseDTO[]> {

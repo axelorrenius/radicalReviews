@@ -39,6 +39,7 @@ export default async function courseRoutes(
             return await c?.courseController.searchCourses(schoolId, query)
         }
     )
+
     fastify.get<{ Params: { courseId: number } }>(
         "/:courseId",
         async (request, reply) => {
@@ -69,24 +70,59 @@ export default async function courseRoutes(
         }
     )
 
-    fastify.get<{ Params: { courseId: number } }>(
-        "/:courseId/threads",
-        async (request, reply) => {
-            const { courseId } = request.params
-            const threads = await c?.courseController.getThreads(courseId)
+    fastify.get<{
+        Params: { courseId: number }
+        Body: { courseInstanceId?: number }
+    }>("/:courseId/threads", async (request, reply) => {
+        const { courseId } = request.params
+        const { courseInstanceId } = request.body
+        const threads = await c?.courseController.getThreads(
+            courseId,
+            courseInstanceId
+        )
 
-            if (!threads) return []
+        if (!threads) return []
 
-            return threads.map((thread) => {
-                return {
-                    id: thread.id,
-                    courseId: thread.course.id,
-                    title: thread.title,
-                    content: thread.content,
-                    createdAt: thread.createdAt,
-                    updatedAt: thread.updatedAt
-                }
-            })
+        return threads.map((thread) => {
+            return {
+                id: thread.id,
+                courseId: thread.courseInstance.course.id,
+                courseInstanceId: thread.courseInstance.id,
+                title: thread.title,
+                content: thread.content,
+                createdAt: thread.createdAt,
+                updatedAt: thread.updatedAt
+            }
+        })
+    })
+
+    fastify.post<{
+        Params: {
+            courseId: number
         }
-    )
+        Body: {
+            id: number | null
+            roundName: string
+            roundStart: Date
+            roundEnd: Date
+            examDate: Date | null
+            tags?: string[]
+        }
+    }>("/:courseId/instance", async (request, reply) => {
+        const { user } = request
+        const { courseId } = request.params
+        const { id, roundName, roundStart, examDate, roundEnd, tags } =
+            request.body
+        const courseInstance =
+            await c?.courseController.createOrUpdateCourseInstance(user, {
+                id,
+                courseId,
+                roundName,
+                roundStart,
+                roundEnd,
+                examDate,
+                tags
+            })
+        return reply.code(200).send(courseInstance)
+    })
 }
