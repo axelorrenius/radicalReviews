@@ -1,7 +1,14 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify"
 import { controllers as c } from "../controllers"
-import { requestUser } from "./util"
 //Routes for forum data
+
+interface UserDTO {
+    id: number
+    avatar?: string
+    username: string
+    level: number
+    experience: number
+}
 
 interface ThreadDTO {
     id: number
@@ -15,6 +22,7 @@ interface ThreadDTO {
     updatedAt: Date
     posts: PostDTO[]
     tags: string[]
+    user: UserDTO
 }
 
 interface PostDTO {
@@ -26,6 +34,7 @@ interface PostDTO {
     createdAt?: Date
     updatedAt?: Date
     comments: CommentDTO[]
+    user: UserDTO
 }
 
 interface CommentDTO {
@@ -59,6 +68,13 @@ export default async function threadRoutes(
                 courseInstanceId: thread.courseInstance.id,
                 courseId: thread.courseInstance.course.id,
                 tags: thread.tags || [],
+                user: {
+                    id: thread.createdBy.id,
+                    username: thread.createdBy.username,
+                    avatar: thread.createdBy.avatar,
+                    level: thread.createdBy.level || 0,
+                    experience: thread.createdBy.experience
+                },
                 posts: thread.posts.map((post) => {
                     return {
                         id: post.id,
@@ -76,7 +92,14 @@ export default async function threadRoutes(
                                 createdAt: comment.createdAt,
                                 updatedAt: comment.updatedAt
                             }
-                        })
+                        }),
+                        user: {
+                            id: post.createdBy.id,
+                            avatar: post.createdBy.avatar,
+                            username: post.createdBy.username,
+                            level: post.createdBy.level || 0,
+                            experience: post.createdBy.experience
+                        }
                     }
                 })
             }
@@ -84,7 +107,7 @@ export default async function threadRoutes(
     )
 
     fastify.post<{ Body: ThreadDTO }>("", async (request, reply) => {
-        const user = requestUser
+        const user = request.user
         const { id, courseInstanceId, title, content, tags } = request.body
         const result = await c?.courseController.createOrUpdateThread(user, {
             id,
@@ -117,7 +140,7 @@ export default async function threadRoutes(
     fastify.post<{ Params: { threadId: number }; Body: PostDTO }>(
         "/:threadId/posts",
         async (request, reply) => {
-            const user = requestUser
+            const user = request.user
             const { threadId } = request.params
             const { id, content } = request.body
             const post = await c?.courseController.createOrUpdatePost(

@@ -37,5 +37,5 @@ export class Post {
     thread!: Thread
 
     @OneToMany(() => Comment, (comment) => comment.post)
-    comments: Collection<Comment> = new Collection<Comment>(this)
+    comments!: Collection<Comment>
 }

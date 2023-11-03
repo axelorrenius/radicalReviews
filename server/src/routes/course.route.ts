@@ -72,13 +72,20 @@ export default async function courseRoutes(
 
     fastify.get<{
         Params: { courseId: number }
-        Body: { courseInstanceId?: number }
+        Querystring: { courseInstanceId?: string }
     }>("/:courseId/threads", async (request, reply) => {
         const { courseId } = request.params
-        const { courseInstanceId } = request.body
+        const { courseInstanceId } = request.query
+        let courseInstanceIdNumber: number | undefined
+        try {
+            courseInstanceIdNumber = parseInt(courseInstanceId || "")
+        } catch (e) {
+            courseInstanceIdNumber = undefined
+        }
+
         const threads = await c?.courseController.getThreads(
             courseId,
-            courseInstanceId
+            courseInstanceIdNumber
         )
 
         if (!threads) return []
@@ -91,7 +98,8 @@ export default async function courseRoutes(
                 title: thread.title,
                 content: thread.content,
                 createdAt: thread.createdAt,
-                updatedAt: thread.updatedAt
+                updatedAt: thread.updatedAt,
+                tags: thread.tags || []
             }
         })
     })

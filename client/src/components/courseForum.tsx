@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useHistory, useParams } from "react-router-dom"
 import Button from "react-bootstrap/Button"
 import Card from "react-bootstrap/Card"
 import Modal from "react-bootstrap/Modal"
@@ -20,6 +20,8 @@ import { Typeahead } from "react-bootstrap-typeahead"
 import { setTokenSourceMapRange } from "typescript"
 import { Option } from "react-bootstrap-typeahead/types/types"
 import CreateCourseInstanceModal from "./createCourseRoundModal"
+import CreateThreadModal from "./createThreadModal"
+import { t } from "@mikro-orm/core"
 
 interface RouteParams {
     courseId: string // Define the type of courseId here
@@ -69,71 +71,15 @@ const mockAssignments = [
         courseRound: "HT20"
     }
 ]
-
-const mockthreads = [
-    {
-        id: 1,
-        courseId: 1,
-        title: "Introduction to Programming",
-        upVotes: 10,
-        downVotes: 2,
-        content: "This thread is about the basics of programming.",
-        createdAt: new Date("2023-01-15"),
-        updatedAt: new Date("2023-01-16"),
-        posts: [],
-        tags: ["Programming", "Beginner"],
-        courseRound: "HT20"
-    },
-    {
-        id: 2,
-        courseId: 1,
-        title: "Data Structures Discussion",
-        upVotes: 8,
-        downVotes: 1,
-        content: "Let's talk about data structures and their applications.",
-        createdAt: new Date("2022-01-17"),
-        updatedAt: new Date("2023-01-18"),
-        posts: [],
-        tags: ["Data Structures", "Intermediate"],
-        courseRound: "HT19"
-    },
-    {
-        id: 3,
-        courseId: 2,
-        title: "Algorithm Optimization",
-        upVotes: 15,
-        downVotes: 3,
-        content: "Share your insights on optimizing algorithms.",
-        createdAt: new Date("2021-01-20"),
-        updatedAt: new Date("2023-01-21"),
-        posts: [],
-        tags: ["Algorithms", "Advanced"],
-        courseRound: "VT20"
-    },
-    {
-        id: 4,
-        courseId: 2,
-        title: "Web Development Frameworks",
-        upVotes: 12,
-        downVotes: 4,
-        content:
-            "Discuss popular web development frameworks and their features.",
-        createdAt: new Date("2023-06-23"),
-        updatedAt: new Date("2023-01-24"),
-        posts: [],
-        tags: ["Web Development", "Frameworks"],
-        courseRound: "VT19"
-    }
-]
 const server = new InternalAPI()
 
 function CourseDetail() {
+    const history = useHistory()
     const { courseId } = useParams<RouteParams>()
     const courseIdNum = parseInt(courseId)
 
-    const [showModal, setShowModal] = useState(false)
     const [showCourseRoundModal, setShowCourseRoundModal] = useState(false)
-    const [newThread, setNewThread] = useState("")
+    const [showCreateThreadModal, setShowCreateThreadModal] = useState(false)
     const [course, setCourse] = useState<CourseDTO | null>(null)
     const [threads, setThreads] = useState<ThreadDTO[]>([])
     const [selectedCourseRound, setSelectedCourseRound] = useState<
@@ -166,52 +112,20 @@ function CourseDetail() {
         })
     }, [])
 
-    const handleClose = () => setShowModal(false)
-    const handleShow = () => setShowModal(true)
-
-    const fetchThreads = async () => {
-        // const threads = await server.getThreads(courseIdNum)
-        // make example threads from dto
-        setThreads(mockthreads)
-    }
+    useEffect(() => {
+        const courseRound = selectedCourseRound[0]
+        server.getThreads(courseIdNum, courseRound?.id).then((result) => {
+            setThreads(result || [])
+        })
+    }, [selectedCourseRound])
 
     const fetchAssignments = async () => {
         setAssignments(mockAssignments)
     }
 
     useEffect(() => {
-        fetchThreads()
         fetchAssignments()
     }, [])
-
-    const addNewThread = () => {
-        if (newThread) {
-            const newThreadObj = {
-                courseId: courseIdNum,
-                title: newThread,
-                content: "",
-                upVotes: 0,
-                downVotes: 0,
-                createdAt: new Date(),
-                posts: [],
-                tags: []
-            }
-
-            server
-                .saveThread(newThreadObj)
-                .then((result) => {
-                    setThreads([result, ...threads])
-                })
-                .catch((err) => console.error(err))
-
-            setNewThread("") // Clear the input
-            handleClose()
-        }
-    }
-
-    const addThread = () => {
-        handleShow() // Show the modal when the button is clicked
-    }
 
     const startDate = new Date("2018-01-01").getTime()
     const endDate = new Date("2024-01-01").getTime()
@@ -227,6 +141,7 @@ function CourseDetail() {
     }
 
     const calculateDotPosition = (threadDate: Date) => {
+        threadDate = new Date(threadDate)
         const startDate = new Date("2018-01-01").getTime()
         const endDate = new Date("2024-01-01").getTime()
         const totalMilliseconds = endDate - startDate
@@ -264,7 +179,7 @@ function CourseDetail() {
             </Form.Group>
 
             <div className="timeline">
-                {threads.map((thread) => (
+                {threads?.map((thread) => (
                     <div
                         key={thread.id}
                         className="timeline-dot"
@@ -272,7 +187,7 @@ function CourseDetail() {
                     ></div>
                 ))}
 
-                {assignments.map((assignment, index) => (
+                {assignments?.map((assignment, index) => (
                     <div
                         key={index}
                         className="assignment-dot"
@@ -283,7 +198,7 @@ function CourseDetail() {
                 ))}
 
                 <div className="reference-points">
-                    {referencePoints.map((point, index) => (
+                    {referencePoints?.map((point, index) => (
                         <div
                             key={index}
                             className="timeline-reference-point"
@@ -320,7 +235,9 @@ function CourseDetail() {
                             <Tab.Pane eventKey="threads">
                                 <h3>Threads</h3>
                                 <Button
-                                    onClick={addThread}
+                                    onClick={() =>
+                                        setShowCreateThreadModal(true)
+                                    }
                                     variant="primary"
                                     style={{
                                         marginLeft: "10px"
@@ -329,7 +246,7 @@ function CourseDetail() {
                                     Ask a Question
                                 </Button>
                                 <div className="threads">
-                                    {threads.map((thread) => (
+                                    {threads?.map((thread) => (
                                         <Link
                                             key={thread.id}
                                             to={`/thread/${thread.id}`}
@@ -349,7 +266,7 @@ function CourseDetail() {
                                                     </Card.Body>
                                                 </ThreadCardContent>
                                                 <Tags>
-                                                    {thread.tags.map(
+                                                    {thread.tags?.map(
                                                         (tag, index) => (
                                                             <Tag key={index}>
                                                                 {tag}
@@ -391,34 +308,21 @@ function CourseDetail() {
                     </Card.Body>
                 </Card>
             </Tab.Container>
+            <CreateThreadModal
+                show={showCreateThreadModal}
+                onDone={(thread) => {
+                    setShowCreateThreadModal(false)
+                    if (thread && thread.id) {
+                        history.push(`/thread/${thread.id}`)
+                    }
+                }}
+                courseInstance={selectedCourseRound[0]}
+            />
             <CreateCourseInstanceModal
                 show={showCourseRoundModal}
                 onDone={(instance) => handleNewCourseRound(instance)}
                 course={course}
             />
-
-            {/* New Thread Modal */}
-            <Modal show={showModal} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add New Thread</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <textarea
-                        rows={1}
-                        value={newThread}
-                        onChange={(e) => setNewThread(e.target.value)}
-                        placeholder="Add a new question..."
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={addNewThread}>
-                        Save Question
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </div>
     )
 }

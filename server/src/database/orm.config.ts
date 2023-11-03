@@ -22,7 +22,7 @@ const config: Options = {
     port: 5432,
     dbName: process.env.PG_DATABASE,
     type: "postgresql",
-    debug: true,
+    // debug: true,
     driverOptions: {
         connection: {
             ssl: {

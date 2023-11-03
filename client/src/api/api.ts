@@ -178,12 +178,27 @@ export class InternalAPI {
         )
     }
 
-    public async saveThread(dto: ThreadDTO): Promise<ThreadDTO> {
+    public async saveThread(dto: {
+        id?: number
+        courseInstanceId: number
+        title: string
+        content: string
+        tags?: string[]
+    }): Promise<ThreadDTO> {
         return await this.post(this.endpoint + this.threads, dto)
     }
-    public async getThreads(courseId: number): Promise<ThreadDTO[]> {
+    public async getThreads(
+        courseId: number,
+        courseInstanceId?: number
+    ): Promise<ThreadDTO[]> {
         return await this.get<ThreadDTO[]>(
-            this.endpoint + this.courses + "/" + courseId + "/threads"
+            this.endpoint +
+                this.courses +
+                "/" +
+                courseId +
+                "/threads" +
+                "?courseInstanceId=" +
+                courseInstanceId || "0"
         )
     }
     public async getThread(threadId: number): Promise<ThreadDTO> {
@@ -206,7 +221,11 @@ export class InternalAPI {
         )
     }
 
-    public async savePost(dto: PostDTO): Promise<PostDTO> {
+    public async savePost(dto: {
+        id?: number
+        content: string
+        threadId: number
+    }): Promise<PostDTO> {
         return await this.post(
             `${this.endpoint}${this.threads}/${dto.threadId}/posts`,
             dto

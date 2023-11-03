@@ -208,7 +208,9 @@ export class CourseController {
 
         await this.em.persist(thread)
         await this.em.flush()
-        if (tags) this.addTags(EntityType.Thread, thread.id, tags)
+        console.log(tags)
+        if (tags) await this.addTags(EntityType.Thread, thread.id, tags)
+        await this.em.flush()
         return thread
     }
 
@@ -218,6 +220,7 @@ export class CourseController {
         threadId: number,
         content: string
     ) {
+        console.log(id)
         const post = id
             ? await this.em.findOne(Post, { id })
             : this.em.create(Post, {
@@ -345,11 +348,12 @@ export class CourseController {
         courseId: number,
         courseInstanceId?: number
     ): Promise<Thread[]> {
-        const threads = await this.em.find(
-            Thread,
-            { courseInstance: { course: courseId, id: courseInstanceId } },
-            { populate: ["createdBy", "courseInstance"] }
-        )
+        let where: any = { courseInstance: { course: courseId } }
+        if (courseInstanceId) where.courseInstance.id = courseInstanceId
+        console.log(where)
+        const threads = await this.em.find(Thread, where, {
+            populate: ["createdBy", "courseInstance"]
+        })
         await this.getTags(EntityType.Thread, threads)
         return threads
     }
@@ -358,7 +362,16 @@ export class CourseController {
         return await this.em.findOne(
             Thread,
             { id: threadId },
-            { populate: ["createdBy", "updatedBy", "posts", "posts.comments"] }
+            {
+                populate: [
+                    "createdBy",
+                    "updatedBy",
+                    "posts",
+                    "posts.comments",
+                    "posts.createdBy",
+                    "courseInstance"
+                ]
+            }
         )
     }
 
