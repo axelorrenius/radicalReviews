@@ -9,6 +9,7 @@ import threadRoutes from "./routes/thread.route"
 import schoolRoutes from "./routes/school.route"
 import authRoutes from "./routes/auth.route"
 import userRoutes from "./routes/user.route"
+import { fastifyStatic } from "@fastify/static"
 
 export const build = async (opts: {}) => {
     const db = await initORM()
@@ -77,6 +78,14 @@ const registerDecorators = (app: FastifyInstance) => {
 }
 
 const registerRoutes = (app: FastifyInstance) => {
+    console.log(__dirname)
+    const baseDir = __dirname + "/static/build"
+    app.register(fastifyStatic, {
+        root: baseDir
+    })
+    app.setNotFoundHandler((request, reply) => {
+        reply.sendFile(`${baseDir}/index.html`)
+    })
     app.get("/healthcheck", async (request, reply) => {
         {
             reply.send("OK")

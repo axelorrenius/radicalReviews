@@ -96,7 +96,7 @@ export interface CourseResponse {
 }
 
 export class InternalAPI {
-    private endpoint = "http://localhost:8080"
+    private endpoint = ""
     private schools = "/api/schools"
     private courses = "/api/courses"
     private threads = "/api/threads"

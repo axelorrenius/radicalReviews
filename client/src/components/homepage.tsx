@@ -2,6 +2,7 @@ import React from "react"
 import { InternalAPI, SchoolDTO } from "../api/api"
 import { Card, CardGroup, Col, Row } from "react-bootstrap"
 import { useAuth } from "./authContext"
+import { Link } from "react-router-dom"
 
 const server = new InternalAPI()
 
@@ -32,13 +33,13 @@ function Homepage() {
                                 <Card.Title>{school.schoolName}</Card.Title>
                                 <Card.Subtitle>{school.location}</Card.Subtitle>
                                 <Card.Text>{school.description}</Card.Text>
-                                <Card.Link
+                                <Link
                                     onClick={() => setSchool(school)}
-                                    href={`/courses`}
+                                    to={`/courses`}
                                     className="btn btn-outline-dark px-4"
                                 >
                                     Pick
-                                </Card.Link>
+                                </Link>
                             </Card.Body>
                         </Card>
                     </Col>
