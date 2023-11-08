@@ -4,13 +4,20 @@ import Nav from 'react-bootstrap/Nav';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 function User() {
   const mockOverviewData = {
     name: 'John Doe',
     email: 'johndoe@example.com',
     bio: 'Web Developer',
-    lvl: 'LvL 5, McMathGeekGangLeader'
+    lvl: 'LvL 5: Top Contributor',
+    posts: '312',
+    likes_recived: '4567',
+    followers: '72',
+    response_time: '3h, 46m',
+    most_active_course: 'DH2465',
   };
 
   const mockPosts = [
@@ -59,6 +66,14 @@ function User() {
     },
   ];
 
+  const mockLevelData = {
+    currentLevel: 5,
+    progress: 28,
+    nextLevelProgress: 50
+  };
+
+  const percentage = (mockLevelData.progress / mockLevelData.nextLevelProgress) * 100;
+
   const renderQuests = () => {
     return (
       <div>
@@ -76,7 +91,21 @@ function User() {
 
   return (
     <div>
-      <h2>User Profile</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', marginLeft: '20px', marginRight: '5px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}> {/* Add some space between the wheel and the text */}
+          <h2>User Profile: Mock user</h2>
+          <h4> {mockOverviewData.lvl} </h4>
+        </div>
+        <div style = {{display: 'flex', alignItems: 'center'}}>
+          <div style={{ width: '150px', height: '170px', marginLeft: '750px' }}>
+            <CircularProgressbar value={percentage} text={`${mockLevelData.progress}/${mockLevelData.nextLevelProgress}`} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}> {/* Add some space between the wheel and the text */}
+          <div>Only {mockLevelData.nextLevelProgress - mockLevelData.progress} more contributions</div>
+          <div>to reach Level {mockLevelData.currentLevel + 1}.</div>
+        </div>
+      </div>
 
       <Tab.Container id="user-tabs" defaultActiveKey="overview">
         <Card>
@@ -103,10 +132,11 @@ function User() {
             <Tab.Content>
               <Tab.Pane eventKey="overview">
                 <h3>Overview</h3>
-                <p>Name: {mockOverviewData.name}</p>
-                <p>Email: {mockOverviewData.email}</p>
-                <p>Bio: {mockOverviewData.bio}</p>
-                <p>Lvl: {mockOverviewData.lvl}</p>
+                <p>Posts made: {mockOverviewData.posts}</p>
+                <p>Number of Likes Recieved: {mockOverviewData.likes_recived}</p>
+                <p>Total Followers: {mockOverviewData.followers}</p>
+                <p>Average Response Time: {mockOverviewData.response_time}</p>
+                <p>Most Active Forum Section: {mockOverviewData.most_active_course}</p>
               </Tab.Pane>
               <Tab.Pane eventKey="quests">
                 {renderQuests()}
