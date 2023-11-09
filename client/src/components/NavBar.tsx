@@ -95,36 +95,42 @@ const NavBar = (props: NavbarProps) => {
                 Scourse
             </Link>
 
-            <div className="search-bar px-5">
-                <Typeahead
-                    ref={typeaheadRef}
-                    id="basic-typeahead-single"
-                    filterBy={filterBy}
-                    labelKey="description"
-                    placeholder={searchPlaceholder()}
-                    options={searchResults}
-                    isLoading={isSearching}
-                    onInputChange={search}
-                    renderMenuItemChildren={(option: any) => (
-                        <>
-                            <div style={{width: "100%"}} onClick={() => navigate(option)}>
-                                <span>{option.description}</span>
-                            </div>
-                        </>
-                    )}
-                />
-            </div>
 
+
+                
+            { selectedSchool && (
+                <div className="search-bar px-5">
+                    <Typeahead
+                        ref={typeaheadRef}
+                        id="basic-typeahead-single"
+                        filterBy={filterBy}
+                        labelKey="description"
+                        placeholder={searchPlaceholder()}
+                        options={searchResults}
+                        isLoading={isSearching}
+                        onInputChange={search}
+                        renderMenuItemChildren={(option: any) => (
+                            <>
+                                <div style={{width: "100%"}} onClick={() => navigate(option)}>
+                                    <span>{option.description}</span>
+                                </div>
+                            </>
+                        )}
+                        />
+                </div>
+            )}
             <div className="collapse navbar-collapse" id="navbarNav">
-                <ul className="navbar-nav mr-auto">
-                    {menuItems.map(({ title, pageURL }) => (
-                        <li className="nav-item" key={title}>
-                            <Link to={pageURL} className="nav-link">
-                                {title}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                { selectedSchool && (
+                    <ul className="navbar-nav mr-auto">
+                        {menuItems.map(({ title, pageURL }) => (
+                            <li className="nav-item" key={title}>
+                                <Link to={pageURL} className="nav-link">
+                                    {title}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
                 {authenticatedUser ? (
                     <div className="ms-auto d-flex align-items-center">
@@ -136,16 +142,16 @@ const NavBar = (props: NavbarProps) => {
                         <button
                             className="btn btn-outline-light px-4"
                             onClick={logout}
-                        >
+                            >
                             Logout
                         </button>
                     </div>
                 ) : (
-                    <div>
+                    <div className="ms-auto d-flex align-items-center">
                         <button
                             className="btn btn-outline-light px-4"
                             onClick={openModal}
-                        >
+                            >
                             Login
                         </button>
                     </div>

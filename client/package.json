@@ -27,7 +27,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build && del ../server/src/static/build && move build '../server/src/static'",
+        "build": "react-scripts build && mv build '../server/src/static'",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },

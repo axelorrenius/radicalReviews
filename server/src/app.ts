@@ -79,7 +79,7 @@ const registerDecorators = (app: FastifyInstance) => {
 
 const registerRoutes = (app: FastifyInstance) => {
     console.log(__dirname)
-    const baseDir = __dirname + "/static/build"
+    const baseDir = __dirname + "/static"
     app.register(fastifyStatic, {
         root: baseDir
     })
