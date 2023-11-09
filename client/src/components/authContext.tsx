@@ -1,13 +1,23 @@
 import { createContext, useContext, useState, ReactNode } from "react"
-import { AuthenticatedUser, InternalAPI, SchoolDTO } from "../api/api"
+import { AuthenticatedUser, CourseDTO, InternalAPI, SchoolDTO } from "../api/api"
 
 interface AuthContextType {
     authenticatedUser: AuthenticatedUser | null
     sessionToken: string | null
     selectedSchool: SchoolDTO | null
+    selectedCourse: CourseDTO | null
+    toasts: Toast[]
+    addToast: (toast: Toast) => void
     setSchool: (school: SchoolDTO) => void
+    setCourse: (course: CourseDTO | null) => void
     login: (user: AuthenticatedUser, token: string) => void
     logout: () => void
+}
+
+interface Toast {
+    experience: number,
+    delay?: number,
+    id?: number
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -35,6 +45,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 : null
         )
 
+    const [toasts, setToasts] = useState<Toast[]>([])
+
     const [sessionToken, setSessionToken] = useState<string | null>(
         localStorage.getItem("sessionToken")
     )
@@ -44,6 +56,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
             ? JSON.parse(localStorage.getItem("selectedSchool") || "")
             : null
     )
+
+    const [selectedCourse, setSelectedCourse] = useState<CourseDTO | null>(null)
+
+    const addToast = (toast: Toast) => {
+        setTimeout(() => {
+
+            toast.id = toasts.length + 1
+            toast.delay = 5000
+            setToasts([...toasts, toast])
+            setTimeout(() => {
+                const newToasts = toasts.filter((t) => t.id !== toast.id)
+                setToasts(newToasts)
+            }, toast.delay)
+        }, 100)
+    }
 
     const login = (user: AuthenticatedUser, token: string) => {
         localStorage.setItem("authenticatedUser", JSON.stringify(user))
@@ -67,13 +94,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
             server.setPreferredSchool(school.id).then(() => console.log("done"))
     }
 
+    const setCourse = (course: CourseDTO | null) => {
+        setSelectedCourse(course)
+    }
+
     return (
         <AuthContext.Provider
             value={{
                 login,
                 logout,
                 setSchool,
+                setCourse,
+                addToast,
+                toasts,
                 selectedSchool,
+                selectedCourse,
                 authenticatedUser,
                 sessionToken
             }}

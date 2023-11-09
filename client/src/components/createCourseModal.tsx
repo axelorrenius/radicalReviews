@@ -2,7 +2,8 @@ import { Form, Modal } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import { InternalAPI, SchoolDTO } from "../api/api"
 import { useState } from "react"
-import { useHistory } from "react-router-dom"
+import TagsComponent from "./tagsComponent"
+import { useToasts } from "react-bootstrap-toasts"
 
 type CreateCourseModalProps = {
     show: boolean
@@ -14,15 +15,24 @@ const server = new InternalAPI()
 
 function CreateCourseModal(props: CreateCourseModalProps) {
     const { show, onClose, school } = props
-    const [tags, setTags] = useState<{ idx: number; value: string }[]>([])
+    const toasts = useToasts();
+    const [tags, setTags] = useState<string[]>([])
     const [errorState, setErrorState] = useState({ success: true, message: "" })
-    const history = useHistory()
 
-    const updateTag = (idx: number, value: string) => {
-        const newTags = [...tags]
-        newTags[idx] = { idx, value }
-        setTags(newTags)
+    const showToast = (exp: number) => {
+        setTimeout(() => {
+
+            toasts.show({
+                headerContent: <span className="me-auto">Experience gained</span>,
+                bodyContent: `Congratulations! You just gained ${exp} experience points. ⭐`,
+                toastProps: {
+                    delay: 4000,
+                    autohide: true,
+                }
+            })
+        }, 1000)
     }
+
 
     const handleSubmit = (event: React.SyntheticEvent) => {
         if (!school || !school.id) {
@@ -39,10 +49,6 @@ function CreateCourseModal(props: CreateCourseModalProps) {
             description: { value: string }
             schoolId: { value: string }
         }
-        const tagValues = tags.reduce((acc, tag) => {
-            if (tag.value.trim()) acc.push(tag.value.trim())
-            return acc
-        }, [] as string[])
         setErrorState({ success: true, message: "" })
         server
             .saveCourse({
@@ -51,12 +57,12 @@ function CreateCourseModal(props: CreateCourseModalProps) {
                 courseName: target.courseName.value,
                 description: target.description.value,
                 schoolId: school.id,
-                tags: tagValues
+                tags: tags
             })
             .then((res) => {
                 if (res.success) {
                     onClose()
-                    history.push(`/course/${res.course?.id}`)
+                    showToast(10)
                 } else {
                     setErrorState({
                         success: false,
@@ -69,7 +75,7 @@ function CreateCourseModal(props: CreateCourseModalProps) {
     return (
         <Modal show={show} onHide={() => onClose()}>
             <Form onSubmit={handleSubmit}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton onClick={() => showToast(10)}>
                     <Modal.Title>Create course</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -102,29 +108,8 @@ function CreateCourseModal(props: CreateCourseModalProps) {
                             </Form.Group>
                             <Form.Group className="mb-10">
                                 <Form.Label>Tags</Form.Label>
-                                {tags.map((tag) => (
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Enter a tag"
-                                        style={{ marginTop: "10px" }}
-                                        onBlur={(event) =>
-                                            updateTag(
-                                                tag.idx,
-                                                event.target.value
-                                            )
-                                        }
-                                    />
-                                ))}
-                                <Form.Control
-                                    type="button"
-                                    value="Add tag"
-                                    style={{ marginTop: "10px" }}
-                                    onClick={() =>
-                                        setTags([
-                                            ...tags,
-                                            { idx: tags.length, value: "" }
-                                        ])
-                                    }
+                                <TagsComponent
+                                    setTags={(tags) => setTags([...tags])}
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">

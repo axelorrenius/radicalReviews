@@ -3,13 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ToastsProvider as BootstrapToastsProvider } from 'react-bootstrap-toasts';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <BootstrapToastsProvider 
+      toastContainerProps={{ position: 'top-end', className: 'p-2' }}
+      limit={5}>
+      <App />
+    </BootstrapToastsProvider>
   </React.StrictMode>
 );
 

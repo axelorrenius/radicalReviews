@@ -20,12 +20,10 @@ export class AuthController {
     public async createUser(email: string, password: string) {}
 
     private async hashPassword(password: string) {
-        console.log("HASH PASSWORD")
         return await bcrypt.hash(password.trim(), 10)
     }
 
     private createToken(user: User) {
-        console.log("CREATE TOKEN")
         const userValues = {
             id: user.id,
             username: user.username,
@@ -45,7 +43,6 @@ export class AuthController {
 
     public async login(username: string, passwordIn: string) {
         const user = await this.getUserByUsername(username)
-        console.log(user)
         if (!user) {
             return {
                 success: false,
@@ -110,11 +107,8 @@ export class AuthController {
             programDescription,
             description
         })
-        console.log(user)
         await this.em.persistAndFlush(user)
         const token = this.createToken(user)
-
-        console.log("HEJ")
 
         return {
             user: {

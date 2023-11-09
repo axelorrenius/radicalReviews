@@ -31,12 +31,21 @@ export default async function courseRoutes(
         console.log(course)
         return reply.code(200).send(course)
     })
-    fastify.post<{ Body: { query: string; schoolId: number } }>(
+    fastify.post<{ Body: { query: string; schoolId?: number, courseId?: number } }>(
         "/search",
         async (request, reply) => {
-            const { query, schoolId } = request.body
+            const { query, schoolId, courseId } = request.body
 
-            return await c?.courseController.searchCourses(schoolId, query)
+            if (!courseId && schoolId) {
+                return await c?.courseController.searchCourses(schoolId, query)
+            }
+            if (courseId) {
+                return await c?.courseController.searchPosts(
+                    courseId,
+                    query
+                )
+            }
+            return []
         }
     )
 
@@ -69,7 +78,7 @@ export default async function courseRoutes(
             )
         }
     )
-
+    
     fastify.get<{
         Params: { courseId: number }
         Querystring: { courseInstanceId?: string }
@@ -99,6 +108,8 @@ export default async function courseRoutes(
                 content: thread.content,
                 createdAt: thread.createdAt,
                 updatedAt: thread.updatedAt,
+                upVotes: thread.upVotes,
+                downVotes: thread.downVotes,
                 tags: thread.tags || []
             }
         })

@@ -11,6 +11,6 @@ export default async function userRoutes(
         const { id } = request.user
         const { schoolId } = request.body
         await c?.courseController.setPreferredSchool(id, schoolId)
-        return reply.code(200).send()
+        return reply.code(200).send(null)
     })
 }

@@ -26,9 +26,15 @@ export interface CourseDTO {
     courseInstances?: CourseInstanceDTO[]
 }
 
-export interface SearchCourseDTO {
+export interface SearchDTO {
     query: string
     schoolId: number
+}
+
+export interface QueryResult {
+    entityType: string
+    entityId: number
+    description: string
 }
 
 export interface ThreadDTO {
@@ -119,7 +125,11 @@ export class InternalAPI {
             body: JSON.stringify(body)
         })
 
-        return response.json()
+        try {
+            return response.json()
+        } catch (err) {
+            return {} as U
+        }
     }
 
     public async get<T>(endpoint: string): Promise<T> {
@@ -159,9 +169,9 @@ export class InternalAPI {
         )
     }
 
-    public async searchCourse(search: SearchCourseDTO): Promise<CourseDTO[]> {
-        return await this.post<SearchCourseDTO, CourseDTO[]>(
-            this.endpoint + this.courses,
+    public async search(search: SearchDTO): Promise<QueryResult[]> {
+        return await this.post<SearchDTO, QueryResult[]>(
+            this.endpoint + this.courses + "/search",
             search
         )
     }

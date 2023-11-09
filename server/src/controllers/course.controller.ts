@@ -11,20 +11,25 @@ import { Tag } from "../database/entities/tag.entity"
 import { TagInstance } from "../database/entities/tag-instance.entity"
 import { CourseDTO } from "../routes/course.route"
 
+interface QueryResult {
+    entityType: string
+    entityId: number
+    description: string
+}
+
 export class CourseController {
     constructor(private em: EntityManager) {}
 
     async searchCourses(
         schoolId: number,
         searchTerm: string
-    ): Promise<Course[]> {
+    ): Promise<QueryResult[]> {
         let query = this.em
             .createQueryBuilder(Course, "c")
             .select([
-                "c.courseId",
+                "c.id",
                 "c.courseCode",
                 "c.courseName",
-                "s.schoolName"
             ])
             .join("c.school", "s")
 
@@ -41,7 +46,14 @@ export class CourseController {
             })
         }
 
-        return await query.execute()
+        const result = await query.execute()
+        return result.map((course) => {
+            return {
+                entityId: course.id,
+                description: `${course.courseCode} - ${course.courseName}`,
+                entityType: "course"
+            }
+        })
     }
 
     async createOrUpdateCourse(
@@ -91,7 +103,6 @@ export class CourseController {
 
         this.em.persist(course)
         if (!course.id) await this.em.flush()
-        console.log(tags)
         if (tags)
             await this.addTags(EntityType.Course, course.id, options.tags || [])
         await this.em.flush()
@@ -208,7 +219,6 @@ export class CourseController {
 
         await this.em.persist(thread)
         await this.em.flush()
-        console.log(tags)
         if (tags) await this.addTags(EntityType.Thread, thread.id, tags)
         await this.em.flush()
         return thread
@@ -220,7 +230,6 @@ export class CourseController {
         threadId: number,
         content: string
     ) {
-        console.log(id)
         const post = id
             ? await this.em.findOne(Post, { id })
             : this.em.create(Post, {
@@ -278,7 +287,6 @@ export class CourseController {
 
             if (existingsTagInstances[tag.id]) continue
 
-            console.log(tagName)
 
             const tagInstance = this.em.create(TagInstance, {
                 ...new TagInstance(),
@@ -320,14 +328,49 @@ export class CourseController {
         }
     }
 
-    async searchPosts(courseId: number, searchTerm: string): Promise<Post[]> {
+    async searchPosts(courseId: number, searchTerm: string): Promise<QueryResult[]> {
         let query = this.em
             .createQueryBuilder(Post, "p")
-            .select("*")
-            .where({ course: courseId, content: { $ilike: `%${searchTerm}%` } })
+            .select(["p.id", "p.content"])
+            .where({ thread: 
+                { courseInstance: 
+                    { course: courseId } 
+                }, 
+                content: 
+                { $ilike: `%${searchTerm}%` } 
+            })
             .orderBy({ upVotes: "DESC", downVotes: "ASC", createdAt: "DESC" })
+            .limit(10)
 
-        return await query.execute()
+        let threadQuery = this.em
+            .createQueryBuilder(Thread, "t")
+            .select(["t.id", "t.content", "t.title"])
+            .where({ courseInstance: 
+                { course: courseId }, 
+                $or: [ 
+                    {content: { $ilike: `%${searchTerm}%` }}, 
+                    {title: { $ilike: `%${searchTerm}%` }}
+                ]
+            })
+            .orderBy({ upVotes: "DESC", downVotes: "ASC", createdAt: "DESC" })
+            .limit(10)
+
+        const [postsRaw, threadsRaw] = await Promise.all([query.execute(), threadQuery.execute()])
+        const posts = postsRaw.map((post) => {
+            return {
+                entityType: "thread",
+                entityId: post.id,
+                description: post.content.substring(0, 100)
+            }
+        })
+        const threads = threadsRaw.map((thread) => {
+            return {
+                entityType: "thread",
+                entityId: thread.id,
+                description: thread.title.substring(0, 100)
+            }
+        })
+        return threads.concat(posts)
     }
 
     async getCourse(courseId: number): Promise<Course | null> {
@@ -350,9 +393,12 @@ export class CourseController {
     ): Promise<Thread[]> {
         let where: any = { courseInstance: { course: courseId } }
         if (courseInstanceId) where.courseInstance.id = courseInstanceId
-        console.log(where)
         const threads = await this.em.find(Thread, where, {
-            populate: ["createdBy", "courseInstance"]
+            populate: ["createdBy", "courseInstance"],
+            orderBy: { upVotes: "DESC", downVotes: "ASC", createdAt: "DESC" }
+        })
+        threads.sort((a, b) => {
+            return (b.upVotes - b.downVotes) - (a.upVotes - a.downVotes)
         })
         await this.getTags(EntityType.Thread, threads)
         return threads

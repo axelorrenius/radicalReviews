@@ -3,6 +3,7 @@ import { CourseInstanceDTO, InternalAPI, PostDTO, ThreadDTO } from "../api/api"
 import { useState } from "react"
 import TagsComponent from "./tagsComponent"
 import { threadId } from "worker_threads"
+import { useToasts } from "react-bootstrap-toasts"
 
 type CreateThreadModalProps = {
     show: boolean
@@ -14,6 +15,21 @@ const server = new InternalAPI()
 function CreatePostModal(props: CreateThreadModalProps) {
     const { show, onDone, thread } = props
     const [errorState, setErrorState] = useState({ success: true, message: "" })
+    const toasts = useToasts();
+
+    const showToast = (exp: number) => {
+        setTimeout(() => {
+
+            toasts.show({
+                headerContent: <span className="me-auto">Experience gained</span>,
+                bodyContent: `Congratulations! You just gained ${exp} experience points. ⭐`,
+                toastProps: {
+                    delay: 4000,
+                    autohide: true,
+                }
+            })
+        }, 1000)
+    }
 
     const handleSubmit = (event: React.SyntheticEvent) => {
         event.preventDefault()
@@ -35,6 +51,7 @@ function CreatePostModal(props: CreateThreadModalProps) {
             })
             .then((res) => {
                 if (res) {
+                    showToast(5)
                     onDone(res)
                 } else {
                     setErrorState({

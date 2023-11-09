@@ -1,4 +1,3 @@
-import React from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
 import Card from 'react-bootstrap/Card';
@@ -6,13 +5,17 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { Badge, Col, Row, Table } from 'react-bootstrap';
+import { useAuth } from './authContext';
 
 function User() {
+  const context = useAuth();
+  context.setCourse(null);
   const mockOverviewData = {
     name: 'John Doe',
     email: 'johndoe@example.com',
     bio: 'Web Developer',
-    lvl: 'LvL 5: Top Contributor',
+    lvl: 'Level 5',
     posts: '312',
     likes_recived: '4567',
     followers: '72',
@@ -90,22 +93,13 @@ function User() {
   };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', marginLeft: '20px', marginRight: '5px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column' }}> {/* Add some space between the wheel and the text */}
-          <h2>User Profile: Mock user</h2>
-          <h4> {mockOverviewData.lvl} </h4>
-        </div>
-        <div style = {{display: 'flex', alignItems: 'center'}}>
-          <div style={{ width: '150px', height: '170px', marginLeft: '750px' }}>
-            <CircularProgressbar value={percentage} text={`${mockLevelData.progress}/${mockLevelData.nextLevelProgress}`} />
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}> {/* Add some space between the wheel and the text */}
-          <div>Only {mockLevelData.nextLevelProgress - mockLevelData.progress} more contributions</div>
-          <div>to reach Level {mockLevelData.currentLevel + 1}.</div>
-        </div>
-      </div>
+    <div style={{marginLeft: "10vw", marginRight: "10vw", marginTop: "20px"}}>
+    <Row>
+        <Col>
+          <h2>John Doe</h2>
+          <h4> {mockOverviewData.lvl} <Badge bg="success">Top contributor</Badge></h4>
+        </Col>
+      </Row>
 
       <Tab.Container id="user-tabs" defaultActiveKey="overview">
         <Card>
@@ -131,12 +125,50 @@ function User() {
           <Card.Body>
             <Tab.Content>
               <Tab.Pane eventKey="overview">
-                <h3>Overview</h3>
-                <p>Posts made: {mockOverviewData.posts}</p>
-                <p>Number of Likes Recieved: {mockOverviewData.likes_recived}</p>
-                <p>Total Followers: {mockOverviewData.followers}</p>
-                <p>Average Response Time: {mockOverviewData.response_time}</p>
-                <p>Most Active Forum Section: {mockOverviewData.most_active_course}</p>
+                <Row>
+                  <Col>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>Stat</th>
+                          <th>Score</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Posts made</td>
+                          <td>{mockOverviewData.posts}</td>
+                        </tr>
+                        <tr>
+                          <td>Up votes received</td>
+                          <td>{mockOverviewData.likes_recived}</td>
+                        </tr>
+                        <tr>
+                          <td>Total followers</td>
+                          <td>{mockOverviewData.followers}</td>
+                        </tr>
+                        <tr>
+                          <td>Average response time</td>
+                          <td>{mockOverviewData.response_time}</td>
+                        </tr>
+                        <tr>
+                          <td>Most active forum section</td>
+                          <td>{mockOverviewData.most_active_course}</td>
+                        </tr>
+                      </tbody>
+                    
+                    </Table>
+                  
+                  </Col>
+                  <Col xs={3}>
+                    <div>
+                      <CircularProgressbar value={percentage} text={`${mockLevelData.progress}/${mockLevelData.nextLevelProgress}`} />
+                    </div>
+                    <div>
+                      <p>Only {mockLevelData.nextLevelProgress - mockLevelData.progress} more contributions to reach Level {mockLevelData.currentLevel + 1}.</p>
+                    </div>
+                  </Col>
+                </Row>
               </Tab.Pane>
               <Tab.Pane eventKey="quests">
                 {renderQuests()}

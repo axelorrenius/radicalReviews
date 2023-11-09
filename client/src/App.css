@@ -1,5 +1,26 @@
 @import "~font-awesome/css/font-awesome.min.css";
 
+:root, [data-bs-theme=light] {
+  --primary: 220, 170, 125;
+  --bs-primary-rgb: 253, 146, 87 !important;
+  --bs-link-color: 253, 146, 87 !important;
+}
+
+.button-primary {
+  --bs-btn-bg: 253, 146, 87 !important;
+  
+}
+
+.navbar {
+  padding: 20px !important;
+}
+
+.custom-btn {
+  background-color: rgb(var(--bs-primary-rgb)) !important;
+  border-color: rgb(var(--bs-primary-rbg)) !important;
+}
+
+
 .App {
   text-align: center;
 }
@@ -38,3 +59,4 @@
     transform: rotate(360deg);
   }
 }
+

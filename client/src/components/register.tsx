@@ -23,7 +23,6 @@ function Register() {
                 password: target.password.value
             })
             .then((res) => {
-                console.log(res)
                 if (res.success && res.token) {
                     login(res.user, res.token)
                 } else {

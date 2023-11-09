@@ -7,6 +7,10 @@ import "font-awesome/css/font-awesome.min.css" // Import the Font Awesome CSS
 import { InternalAPI, PostDTO, ThreadDTO } from "../api/api"
 import { useParams } from "react-router-dom"
 import CreatePostModal from "./addPostModal"
+import PostComponent from "./post"
+import Breadcrumbs from "./breadcrumbs"
+import { useAuth } from "./authContext"
+import { useToasts } from "react-bootstrap-toasts"
 
 interface RouteParams {
     threadId: string // Define the type of courseId here
@@ -14,6 +18,7 @@ interface RouteParams {
 
 const Post = () => {
     const server = new InternalAPI()
+    const context = useAuth()
 
     const { threadId } = useParams<RouteParams>()
     const threadIdNum = parseInt(threadId)
@@ -22,6 +27,7 @@ const Post = () => {
     const [sortedPosts, setSortedPost] = useState<PostDTO[] | []>([])
     const [newPost, setNewPost] = useState("") // Track the new comment text
     const [showAddPostModal, setShowAddPostModal] = useState(false)
+
 
     const fetchThread = async () => {
         server
@@ -101,38 +107,7 @@ const Post = () => {
     // Function to close the "Add Comment" modal
     const closeAddPost = () => {
         setShowAddPostModal(false)
-    }
-
-    // Function to add a new comment
-    const addPost = () => {
-        if (newPost.trim() !== "") {
-            const newPostObj: PostDTO = {
-                threadId: threadIdNum,
-                user: {
-                    id: 1,
-                    username: "John Doe",
-                    lvl: 1,
-                    title: "Beginner"
-                },
-                content: newPost,
-                upVotes: 0,
-                downVotes: 0,
-                comments: []
-            }
-
-            server
-                .savePost(newPostObj)
-                .then((post) => {
-                    if (!thread) return
-                    setNewPost("")
-                    closeAddPost()
-
-                    setThread({ ...thread, posts: [...thread.posts, post] })
-                    // setSortedPost([...sortedPosts, post]); // Include the new comment in the sorted list
-                })
-                .catch((err) => console.error(err))
-            // const updatedComments = [...thread?.posts, newPost];
-        }
+        fetchThread()
     }
 
     // Sort comments whenever sortedComments or post.comments change
@@ -153,95 +128,74 @@ const Post = () => {
     }
 
     return (
-        <div className="thread">
-            <Card>
-                <Card.Body>
-                    <Card.Title>{thread.title}</Card.Title>
-                    <Card.Text>{thread.content}</Card.Text>
-                    <div>
-                        <div className="votes">
-                            <Button onClick={upvoteQuestion} variant="link">
-                                <i className="fa fa-arrow-up" />{" "}
-                                {/* Up arrow with red color */}
-                            </Button>
-                            <span>{thread.upVotes - thread.downVotes}</span>
-                            <Button onClick={downvoteQuestion} variant="link">
-                                <i className="fa fa-arrow-down" />{" "}
-                                {/* Down arrow with red color */}
-                            </Button>
-                            <Button onClick={showAddPost} variant="link">
-                                <i className="fa fa-comment" />
-                            </Button>
-                        </div>
-                    </div>
-                </Card.Body>
-            </Card>
-
-            <ListGroup className="posts">
-                {sortedPosts.map((post) => (
-                    <ListGroup.Item key={post.id}>
-                        <div className="user-info">
-                            <img src={profileImage} alt="User" />
-                            <div className="user-details">
-                                <div
-                                    className="username"
-                                    style={{
-                                        fontWeight: "bold",
-                                        fontSize: "12px"
-                                    }}
-                                >
-                                    {post.user.username} -{" "}
-                                    {`Level ${post.user.lvl}`} -{" "}
-                                    {post.user.title}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            className="post-content"
-                            style={{ marginTop: "10px" }}
-                        >
-                            {post.content}
-                        </div>
-                        <div className="votes">
-                            <Button
-                                onClick={() =>
-                                    upvotePost(threadIdNum, post.id as number)
-                                }
-                                variant="link"
-                            >
-                                <i
-                                    className="fa fa-arrow-up"
-                                    style={{ color: "green" }}
-                                />{" "}
-                                {/* Up arrow with red color */}
-                            </Button>
-                            <span>{post.upVotes - post.downVotes}</span>
-                            <Button
-                                onClick={() =>
-                                    downvotePost(threadIdNum, post.id as number)
-                                }
-                                variant="link"
-                            >
-                                <i
-                                    className="fa fa-arrow-down"
-                                    style={{ color: "red" }}
-                                />{" "}
-                                {/* Down arrow with red color */}
-                            </Button>
-                        </div>
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
-
-            {/* Add Comment Modal */}
-            <CreatePostModal
-                thread={thread}
-                show={showAddPostModal}
-                onDone={(post) => {
-                    closeAddPost()
-                }}
-            />
-        </div>
+        <>
+            <Breadcrumbs school={context.selectedSchool} course={context.selectedCourse} thread={thread} />
+            <div style={{marginLeft: "10vw", marginRight: "10vw"}}>
+                <Button
+                    onClick={showAddPost}
+                    variant="primary"
+                    style={{
+                        marginLeft: "10px"
+                    }}
+                    className="custom-btn"
+                >
+                    Answer
+                </Button>
+                <div className="thread">
+                    <PostComponent
+                        onClick={() => () => null}
+                        key={thread.id}
+                        votes={thread.upVotes - thread.downVotes}
+                        showContent={true}
+                        title={thread.title}
+                        content={thread.content}
+                        tags={thread.tags}
+                        postedBy={"Unknown"}
+                        postedAt={thread.createdAt}
+                        level={0}
+                        onDownVote={() => downvoteQuestion()}
+                        onUpVote={() => upvoteQuestion()}
+                        isMain={true}
+                    />
+                </div>
+                <div className="posts">
+                    {sortedPosts.map((post) => (
+                        <PostComponent
+                            onClick={() => null}
+                            key={post.id}
+                            votes={post.upVotes - post.downVotes}
+                            showContent={true}
+                            title={""}
+                            content={post.content}
+                            tags={[]}
+                            postedBy={post.user.username || "Unknown"}
+                            postedAt={post.createdAt ?? new Date()}
+                            level={post.user.lvl ?? 0}
+                            onDownVote={() => downvotePost(threadIdNum, post.id as number)}
+                            onUpVote={() => upvotePost(threadIdNum, post.id as number)}
+                            isMain={false}
+                        />
+                        ))}
+                </div>
+                <Button
+                    onClick={showAddPost}
+                    variant="primary"
+                    style={{
+                        marginLeft: "10px"
+                    }}
+                    className="custom-btn"
+                >
+                    Answer
+                </Button>
+                <CreatePostModal
+                    thread={thread}
+                    show={showAddPostModal}
+                    onDone={(post) => {
+                        closeAddPost()
+                    }}
+                />
+            </div>
+        </>
     )
 }
 
